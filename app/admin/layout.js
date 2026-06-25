@@ -69,18 +69,18 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#f8eff1] text-slate-800 flex flex-col md:flex-row relative overflow-hidden">
       {/* Background Glows */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] ambient-light-pink rounded-full pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] ambient-light-blue rounded-full pointer-events-none z-0" />
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] ambient-light-pink rounded-full pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] ambient-light-blue rounded-full pointer-events-none z-0" />
 
       {/* Mobile Header */}
-      <header className="md:hidden bg-white/95 backdrop-blur-md border-b border-[#ebdfe1] px-4 py-3 flex items-center justify-between z-20 w-full shadow-sm">
+      <header className="md:hidden bg-white/80 backdrop-blur-md border-b border-brand-burgundy/10 px-4 py-3 flex items-center justify-between z-20 w-full shadow-sm sticky top-0">
         <div className="flex items-center gap-2">
           <img
             src="/logo.png"
             alt="Lipistry Logo"
             className="h-8 object-contain mix-blend-multiply"
           />
-          <span className="text-[9px] font-bold tracking-wider text-brand-burgundy bg-brand-burgundy-light px-2 py-0.5 rounded border border-brand-burgundy/10">ADMIN</span>
+          <span className="text-[8px] font-black tracking-wider text-white bg-brand-burgundy px-2 py-0.5 rounded border border-brand-burgundy/10">ADMIN</span>
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -92,21 +92,24 @@ export default function AdminLayout({ children }) {
 
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed inset-y-0 left-0 w-64 bg-white border-r border-[#ebdfe1] p-5 flex flex-col z-30 transition-transform duration-300 md:translate-x-0 md:static md:h-screen shrink-0 shadow-sm
+        fixed inset-y-0 left-0 w-64 bg-white/70 backdrop-blur-md border-r border-brand-burgundy/10 p-5 flex flex-col z-30 transition-transform duration-300 md:translate-x-0 md:static md:h-screen shrink-0 shadow-sm
         ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         {/* Brand Logo */}
-        <div className="hidden md:flex flex-col items-start gap-1 mb-8">
+        <div className="hidden md:flex flex-col items-start gap-1 mb-8 relative group">
           <img
             src="/logo.png"
             alt="Lipistry Logo"
-            className="h-10 object-contain mix-blend-multiply"
+            className="h-10 object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
           />
-          <p className="text-[9px] text-brand-burgundy font-bold tracking-widest uppercase mt-1">IT Admin Console</p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-rose-gold animate-pulse" />
+            <p className="text-[9px] text-brand-burgundy font-extrabold tracking-widest uppercase font-display">IT Admin Console</p>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="space-y-1.5 flex-1">
+        <nav className="space-y-2 flex-1 overflow-y-auto pr-1">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
@@ -116,34 +119,38 @@ export default function AdminLayout({ children }) {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`
-                  flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-205 cursor-pointer group
+                  relative flex items-center gap-3.5 px-4 py-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-300 cursor-pointer group overflow-hidden
                   ${isActive
-                    ? "bg-brand-burgundy-light text-brand-burgundy border-l-2 border-brand-burgundy shadow-sm"
-                    : "text-slate-500 hover:bg-brand-burgundy-light/40 hover:text-slate-800"
+                    ? "bg-gradient-to-r from-brand-burgundy to-brand-burgundy-hover text-white shadow-md shadow-brand-burgundy/15"
+                    : "text-slate-500 hover:bg-brand-burgundy-light/60 hover:text-brand-burgundy"
                   }
                 `}
               >
-                <Icon className={`w-4.5 h-4.5 transition-colors ${isActive ? "text-brand-burgundy" : "text-slate-400 group-hover:text-slate-650"}`} />
-                <span>{link.name}</span>
+                {/* Active Gold Indicator Pill */}
+                {isActive && (
+                  <span className="absolute left-0 top-1/4 bottom-1/4 w-1 rounded-r-md bg-brand-rose-gold" />
+                )}
+                <Icon className={`w-4.5 h-4.5 transition-all duration-300 ${isActive ? "text-brand-rose-gold rotate-3 scale-110" : "text-slate-400 group-hover:text-brand-burgundy group-hover:scale-110"}`} />
+                <span className="relative z-10">{link.name}</span>
               </Link>
             );
           })}
         </nav>
 
         {/* User Info & Log Out */}
-        <div className="pt-4 border-t border-[#ebdfe1] mt-auto space-y-3.5">
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-8 h-8 rounded-full bg-brand-burgundy-light border border-brand-burgundy/10 flex items-center justify-center">
-              <User className="w-4 h-4 text-brand-burgundy" />
+        <div className="pt-4 border-t border-brand-burgundy/10 mt-auto space-y-4">
+          <div className="flex items-center gap-3 px-3 py-2.5 bg-brand-burgundy-light/60 border border-brand-burgundy/5 rounded-2xl shadow-inner-sm">
+            <div className="w-9 h-9 rounded-full bg-brand-burgundy-light border-2 border-brand-rose-gold/20 flex items-center justify-center shadow-sm shrink-0">
+              <User className="w-4.5 h-4.5 text-brand-burgundy" />
             </div>
             <div className="truncate">
-              <p className="text-xs font-bold text-slate-800 truncate">{user.name}</p>
-              <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">IT Admin</p>
+              <p className="text-xs font-black text-slate-800 truncate">{user.name}</p>
+              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">IT Admin</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold text-red-500 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold text-red-500 hover:bg-red-50 border border-transparent hover:border-red-100/50 transition-all duration-200 cursor-pointer shadow-sm-hover"
           >
             <LogOut className="w-4.5 h-4.5" />
             <span>Sign Out</span>
@@ -154,15 +161,15 @@ export default function AdminLayout({ children }) {
       {/* Main Content Pane */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto z-10 relative">
         {/* Top Header - Desktop only */}
-        <header className="hidden md:flex bg-white border-b border-[#ebdfe1] px-8 py-4 items-center justify-between shrink-0 shadow-sm z-20">
+        <header className="hidden md:flex bg-white/75 backdrop-blur-md border-b border-brand-burgundy/10 px-8 py-4.5 items-center justify-between shrink-0 shadow-sm z-20">
           <div>
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">System Administration</p>
-            <h2 className="text-sm font-bold text-slate-700">Welcome back, <span className="text-slate-900 font-bold">{user.name}</span></h2>
+            <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest font-display">System Administration</p>
+            <h2 className="text-sm font-bold text-slate-700 mt-0.5">Welcome back, <span className="text-brand-burgundy font-black">{user.name}</span></h2>
           </div>
 
-          <div className="flex items-center gap-3 bg-brand-burgundy-light border border-brand-burgundy/10 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-brand-burgundy shadow-sm shadow-slate-100">
-            <Sparkles className="w-3.5 h-3.5 text-brand-burgundy animate-pulse" />
-            <span>System Active</span>
+          <div className="flex items-center gap-2.5 bg-gradient-to-r from-brand-burgundy-light to-white border border-brand-burgundy/10 px-3.5 py-1.5 rounded-xl text-xs font-extrabold text-brand-burgundy shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-brand-rose-gold animate-pulse shrink-0" />
+            <span className="tracking-wide uppercase text-[10px]">System Active</span>
           </div>
         </header>
 

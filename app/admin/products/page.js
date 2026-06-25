@@ -299,7 +299,7 @@ export default function ManageProducts() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Wholesale Product Catalog</h1>
-          <p className="text-slate-500 text-xs mt-1 font-semibold">Manage active product variants, set prices, and update Shopify Sync IDs.</p>
+          <p className="text-slate-500 text-xs mt-1 font-semibold">Manage active product variants and set prices.</p>
         </div>
         <button
           onClick={handleOpenAdd}
@@ -579,40 +579,6 @@ export default function ManageProducts() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Shopify Product ID (Optional)</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                      <FileCode2 className="w-4 h-4" />
-                    </span>
-                    <input
-                      type="text"
-                      placeholder="prod_12345"
-                      value={formData.shopify_product_id}
-                      onChange={(e) => setFormData({ ...formData, shopify_product_id: e.target.value })}
-                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs font-semibold glass-input font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Shopify Variant ID (Optional)</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                      <Layers className="w-4 h-4" />
-                    </span>
-                    <input
-                      type="text"
-                      placeholder="var_98765"
-                      value={formData.shopify_variant_id}
-                      onChange={(e) => setFormData({ ...formData, shopify_variant_id: e.target.value })}
-                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs font-semibold glass-input font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-
               <div className="pt-3 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   type="button"
@@ -757,38 +723,6 @@ export default function ManageProducts() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Shopify Product ID (Optional)</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                      <FileCode2 className="w-4 h-4" />
-                    </span>
-                    <input
-                      type="text"
-                      value={formData.shopify_product_id}
-                      onChange={(e) => setFormData({ ...formData, shopify_product_id: e.target.value })}
-                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs font-semibold glass-input font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Shopify Variant ID (Optional)</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                      <Layers className="w-4 h-4" />
-                    </span>
-                    <input
-                      type="text"
-                      value={formData.shopify_variant_id}
-                      onChange={(e) => setFormData({ ...formData, shopify_variant_id: e.target.value })}
-                      className="w-full pl-9 pr-4 py-2 rounded-xl text-xs font-semibold glass-input font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-
               {/* Status Toggle */}
               <div className="p-3 bg-brand-burgundy-light/60 rounded-xl border border-brand-burgundy/10 flex items-center justify-between">
                 <div>
@@ -888,20 +822,10 @@ export default function ManageProducts() {
                   </span>
                 </div>
               </div>
-              {/* Local Inventory Stock & Shopify Sync (Secondary) */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                  <span className="text-[9px] text-emerald-800 font-bold uppercase tracking-wider block mb-1">Available Stock</span>
-                  <span className="text-xs font-black text-emerald-850 block mt-0.5">{selectedProduct.stock_cases !== undefined ? selectedProduct.stock_cases : 0} cases</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Shopify Product ID</span>
-                  <span className="text-xs font-mono font-semibold text-slate-600 truncate block">{selectedProduct.shopify_product_id || "N/A"}</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Shopify Variant ID</span>
-                  <span className="text-xs font-mono font-semibold text-slate-600 truncate block">{selectedProduct.shopify_variant_id || "N/A"}</span>
-                </div>
+              {/* Local Inventory Stock */}
+              <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                <span className="text-[9px] text-emerald-800 font-bold uppercase tracking-wider block mb-1">Available Stock</span>
+                <span className="text-xs font-black text-emerald-850 block mt-0.5">{selectedProduct.stock_cases !== undefined ? selectedProduct.stock_cases : 0} cases</span>
               </div>
 
               {/* Image Gallery */}

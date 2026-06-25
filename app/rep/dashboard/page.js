@@ -354,7 +354,7 @@ export default function RepDashboard() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <Link
-                          href={`/rep/doctors/${doc.id}`}
+                          href={`/rep/doctors/detail?id=${doc.id}`}
                           className="inline-flex items-center p-1 rounded-lg hover:bg-brand-burgundy-light text-slate-500 hover:text-brand-burgundy transition-colors"
                         >
                           <ChevronRight className="w-4 h-4" />

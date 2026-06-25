@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { 
   Loader2, 
@@ -23,9 +23,10 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 
-export default function DoctorDetail() {
+function DoctorDetailContent() {
   const router = useRouter();
-  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const { token } = useAuthStore();
   
   const [loading, setLoading] = useState(true);
@@ -195,6 +196,14 @@ export default function DoctorDetail() {
     );
   }
 
+  if (!doctor) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <p className="text-slate-550 text-xs font-bold tracking-wider">Practice not found.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-fadeIn text-left">
       {/* Back button */}
@@ -237,14 +246,14 @@ export default function DoctorDetail() {
 
         <div className="flex gap-2 w-full md:w-auto shrink-0">
           <Link
-            href={`/rep/doctors/${doctor.id}/edit`}
+            href={`/rep/doctors/edit?id=${doctor.id}`}
             className="flex-1 md:flex-initial inline-flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all"
           >
             <Edit className="w-3.5 h-3.5" />
             <span>Edit Profile</span>
           </Link>
           <Link
-            href={`/rep/orders/new/${doctor.id}`}
+            href={`/rep/orders/new/build?doctorId=${doctor.id}`}
             className="flex-1 md:flex-initial inline-flex justify-center items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
           >
             <ShoppingCart className="w-3.5 h-3.5" />
@@ -282,7 +291,7 @@ export default function DoctorDetail() {
                   </div>
                   <div>
                     <div className="text-xs font-bold text-slate-800">{cardInfo.brand} ending in {cardInfo.last4}</div>
-                    <div className="text-[10px] text-slate-500 font-semibold">Expires {cardInfo.expiry}</div>
+                    <div className="text-[10px] text-slate-505 font-semibold">Expires {cardInfo.expiry}</div>
                   </div>
                 </div>
                 
@@ -499,7 +508,7 @@ export default function DoctorDetail() {
             {orderModalLoading ? (
               <div className="py-20 flex flex-col items-center justify-center gap-3 flex-1">
                 <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
-                <span className="text-slate-500 text-xs font-bold">Fetching line items...</span>
+                <span className="text-slate-505 text-xs font-bold">Fetching line items...</span>
               </div>
             ) : orderDetail ? (
               <div className="space-y-6 overflow-y-auto pr-1 flex-1 text-left">
@@ -507,20 +516,20 @@ export default function DoctorDetail() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Status Card */}
                   <div className="p-3 bg-slate-50 rounded-xl border border-[#ebdfe1]">
-                    <span className="text-[9px] text-slate-505 font-bold uppercase tracking-wider block mb-1">Order Status</span>
+                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Order Status</span>
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold border inline-block ${getStatusColor(orderDetail.order.status)}`}>
                       {formatStatus(orderDetail.order.status)}
                     </span>
                     {orderDetail.order.shopify_order_number && (
-                      <div className="text-[9px] font-mono text-slate-500 mt-2 font-semibold">Shopify Ref: {orderDetail.order.shopify_order_number}</div>
+                      <div className="text-[9px] font-mono text-slate-505 mt-2 font-semibold">Shopify Ref: {orderDetail.order.shopify_order_number}</div>
                     )}
                   </div>
 
                   {/* Doctor Info */}
                   <div className="p-3 bg-slate-50 rounded-xl border border-[#ebdfe1]">
-                    <span className="text-[9px] text-slate-505 font-bold uppercase tracking-wider block mb-1">Doctor Practice</span>
-                    <div className="text-xs font-bold text-slate-800">{orderDetail.order.doctor_practice}</div>
-                    <div className="text-[10px] text-slate-505 font-semibold">Dr. {orderDetail.order.doctor_first_name} {orderDetail.order.doctor_last_name}</div>
+                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Doctor Practice</span>
+                    <div className="text-xs font-bold text-slate-805">{orderDetail.order.doctor_practice}</div>
+                    <div className="text-[10px] text-slate-500 font-semibold">Dr. {orderDetail.order.doctor_first_name} {orderDetail.order.doctor_last_name}</div>
                   </div>
                 </div>
 
@@ -541,7 +550,7 @@ export default function DoctorDetail() {
 
                 {/* Order Items Table */}
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Itemized Line Items</h4>
+                  <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Itemized Line Items</h4>
                   <div className="border border-[#ebdfe1] rounded-xl overflow-hidden bg-white">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
@@ -586,5 +595,20 @@ export default function DoctorDetail() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DoctorDetail() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
+          <p className="text-slate-550 text-xs font-bold tracking-wider">Loading practice detail...</p>
+        </div>
+      </div>
+    }>
+      <DoctorDetailContent />
+    </Suspense>
   );
 }

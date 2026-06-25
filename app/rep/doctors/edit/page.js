@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { 
   Loader2, 
@@ -54,9 +54,10 @@ const INDIA_STATES = [
   { code: "PY", name: "Puducherry" }
 ];
 
-export default function EditDoctor() {
+function EditDoctorContent() {
   const router = useRouter();
-  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const { token } = useAuthStore();
   
   const [pageLoading, setPageLoading] = useState(true);
@@ -159,7 +160,7 @@ export default function EditDoctor() {
       }
 
       toast.success("Practice profile updated successfully.");
-      router.push(`/rep/doctors/${id}`);
+      router.push(`/rep/doctors/detail?id=${id}`);
     } catch (err) {
       toast.error(err.message || "Failed to update doctor profile.");
     } finally {
@@ -172,7 +173,7 @@ export default function EditDoctor() {
       <div className="flex h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
-          <p className="text-slate-550 text-xs font-bold tracking-wider">Retrieving practice profile...</p>
+          <p className="text-slate-555 text-xs font-bold tracking-wider">Retrieving practice profile...</p>
         </div>
       </div>
     );
@@ -183,7 +184,7 @@ export default function EditDoctor() {
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2">
         <Link
-          href={`/rep/doctors/${id}`}
+          href={`/rep/doctors/detail?id=${id}`}
           className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-brand-burgundy transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -372,7 +373,7 @@ export default function EditDoctor() {
         {/* Action Buttons */}
         <div className="pt-3 border-t border-[#ebdfe1] flex justify-end gap-3">
           <Link
-            href={`/rep/doctors/${id}`}
+            href={`/rep/doctors/detail?id=${id}`}
             className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-300 text-slate-650 hover:bg-slate-50 transition-colors"
           >
             Cancel
@@ -388,5 +389,20 @@ export default function EditDoctor() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function EditDoctor() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
+          <p className="text-slate-550 text-xs font-bold tracking-wider">Retrieving practice profile...</p>
+        </div>
+      </div>
+    }>
+      <EditDoctorContent />
+    </Suspense>
   );
 }

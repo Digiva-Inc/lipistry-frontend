@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { 
   Loader2, 
@@ -26,9 +26,10 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 
-export default function OrderDetail() {
+function OrderDetailContent() {
   const router = useRouter();
-  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const { token } = useAuthStore();
 
   const [loading, setLoading] = useState(true);
@@ -366,7 +367,7 @@ export default function OrderDetail() {
 
   if (!orderDetail) {
     return (
-      <div className="max-w-md mx-auto py-12 text-center text-slate-550 font-bold text-xs">
+      <div className="max-w-md mx-auto py-12 text-center text-slate-555 font-bold text-xs">
         Order not found.
       </div>
     );
@@ -426,7 +427,7 @@ export default function OrderDetail() {
             <div className="border border-[#ebdfe1] rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-bold border-b border-[#ebdfe1]">
+                  <tr className="bg-slate-50 text-slate-505 font-bold border-b border-[#ebdfe1]">
                     <th className="px-3 py-2">Product Name</th>
                     <th className="px-3 py-2 text-center">Cases</th>
                     <th className="px-3 py-2 text-right">Price</th>
@@ -466,7 +467,7 @@ export default function OrderDetail() {
                           <span>{item.product_name || "Unknown Product"}</span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-center text-slate-900 font-extrabold">{item.quantity_cases}</td>
+                      <td className="px-3 py-2.5 text-center text-slate-905 font-extrabold">{item.quantity_cases}</td>
                       <td className="px-3 py-2.5 text-right text-slate-700 font-bold">{formatPrice(item.case_price_snapshot)}</td>
                       <td className="px-3 py-2.5 text-right text-slate-900 font-extrabold">{formatPrice(item.case_price_snapshot * item.quantity_cases)}</td>
                     </tr>
@@ -586,7 +587,7 @@ export default function OrderDetail() {
                       <p className="text-[11px]">
                         Refund of {formatPrice(order.total_cents)} has been credited back to:
                       </p>
-                      <p className="text-xs font-extrabold text-slate-800 bg-white/70 px-2 py-1 rounded border border-emerald-100 mt-1 inline-block">
+                      <p className="text-xs font-extrabold text-slate-805 bg-white/70 px-2 py-1 rounded border border-emerald-100 mt-1 inline-block">
                         {getRefundCardDetails(order.stripe_customer_id) || "Stripe Card on File"}
                       </p>
                       <p className="text-[9px] font-mono text-emerald-750 mt-1">Ref ID: {order.stripe_charge_id || "ch_mock_refund"}</p>
@@ -771,7 +772,7 @@ export default function OrderDetail() {
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-burgundy-light file:text-brand-burgundy hover:file:bg-brand-burgundy-light/80 cursor-pointer"
+                  className="w-full text-xs text-slate-505 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-burgundy-light file:text-brand-burgundy hover:file:bg-brand-burgundy-light/80 cursor-pointer"
                   required
                 />
                 {proofFile && (
@@ -783,7 +784,7 @@ export default function OrderDetail() {
                 <button
                   type="button"
                   onClick={() => setReturnModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-300 text-slate-650 hover:bg-slate-50 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-300 text-slate-650 hover:bg-slate-55 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -800,5 +801,20 @@ export default function OrderDetail() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function OrderDetail() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
+          <p className="text-slate-555 text-xs font-bold tracking-wider">Syncing order details...</p>
+        </div>
+      </div>
+    }>
+      <OrderDetailContent />
+    </Suspense>
   );
 }
