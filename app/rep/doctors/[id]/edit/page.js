@@ -15,12 +15,43 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 
-const US_STATES = [
-  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
-  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
-  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
-  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
-  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+const INDIA_STATES = [
+  { code: "AP", name: "Andhra Pradesh" },
+  { code: "AR", name: "Arunachal Pradesh" },
+  { code: "AS", name: "Assam" },
+  { code: "BR", name: "Bihar" },
+  { code: "CG", name: "Chhattisgarh" },
+  { code: "GA", name: "Goa" },
+  { code: "GJ", name: "Gujarat" },
+  { code: "HR", name: "Haryana" },
+  { code: "HP", name: "Himachal Pradesh" },
+  { code: "JH", name: "Jharkhand" },
+  { code: "KA", name: "Karnataka" },
+  { code: "KL", name: "Kerala" },
+  { code: "MP", name: "Madhya Pradesh" },
+  { code: "MH", name: "Maharashtra" },
+  { code: "MN", name: "Manipur" },
+  { code: "ML", name: "Meghalaya" },
+  { code: "MZ", name: "Mizoram" },
+  { code: "NL", name: "Nagaland" },
+  { code: "OD", name: "Odisha" },
+  { code: "PB", name: "Punjab" },
+  { code: "RJ", name: "Rajasthan" },
+  { code: "SK", name: "Sikkim" },
+  { code: "TN", name: "Tamil Nadu" },
+  { code: "TG", name: "Telangana" },
+  { code: "TR", name: "Tripura" },
+  { code: "UP", name: "Uttar Pradesh" },
+  { code: "UK", name: "Uttarakhand" },
+  { code: "WB", name: "West Bengal" },
+  { code: "AN", name: "Andaman & Nicobar" },
+  { code: "CH", name: "Chandigarh" },
+  { code: "DN", name: "Dadra & Nagar Haveli & Daman & Diu" },
+  { code: "DL", name: "Delhi" },
+  { code: "JK", name: "Jammu & Kashmir" },
+  { code: "LA", name: "Ladakh" },
+  { code: "LD", name: "Lakshadweep" },
+  { code: "PY", name: "Puducherry" }
 ];
 
 export default function EditDoctor() {
@@ -96,8 +127,8 @@ export default function EditDoctor() {
     e.preventDefault();
 
     // Validations
-    if (!/^\d{5}$/.test(formData.zip)) {
-      toast.error("ZIP Code must be exactly 5 digits.");
+    if (!/^\d{5,6}$/.test(formData.zip)) {
+      toast.error("ZIP Code must be 5 or 6 digits.");
       return;
     }
 
@@ -268,20 +299,22 @@ export default function EditDoctor() {
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 rounded-xl text-xs font-semibold glass-input cursor-pointer"
               >
-                {US_STATES.map((st) => (
-                  <option key={st} value={st}>{st}</option>
+                <option value="">Select State</option>
+                {INDIA_STATES.map((st) => (
+                  <option key={st.code} value={st.code}>{st.name} ({st.code})</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">ZIP Code *</label>
+              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">ZIP / PIN Code *</label>
               <input
                 type="text"
                 name="zip"
                 required
-                maxLength={5}
+                maxLength={6}
                 value={formData.zip}
                 onChange={handleChange}
+                placeholder="PIN or ZIP Code"
                 className="w-full px-4 py-2.5 rounded-xl text-xs font-semibold glass-input"
               />
             </div>

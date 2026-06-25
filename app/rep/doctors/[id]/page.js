@@ -173,6 +173,8 @@ export default function DoctorDetail() {
         return "bg-blue-50 text-blue-700 border-blue-200";
       case "cancelled":
         return "bg-rose-50 text-rose-700 border-rose-200";
+      case "failed_payment":
+        return "bg-rose-50 text-rose-700 border-rose-200";
       default:
         return "bg-amber-50 text-amber-700 border-amber-200";
     }

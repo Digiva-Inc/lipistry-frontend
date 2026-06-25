@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import Link from "next/link";
-import { 
-  LayoutDashboard, 
-  Stethoscope, 
-  ShoppingCart, 
-  User, 
+import {
+  LayoutDashboard,
+  Stethoscope,
+  ShoppingCart,
+  User,
   LogOut,
   Sparkles,
   UserCheck
@@ -68,10 +68,10 @@ export default function RepLayout({ children }) {
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#ebdfe1] p-5 shrink-0 z-30 shadow-sm h-screen sticky top-0">
         {/* Brand Logo */}
         <div className="flex flex-col items-start gap-1 mb-8">
-          <img 
-            src="/logo.jpg" 
-            alt="Lipistry Logo" 
-            className="h-10 object-contain mix-blend-multiply" 
+          <img
+            src="/logo.png"
+            alt="Lipistry Logo"
+            className="h-10 object-contain mix-blend-multiply"
           />
           <p className="text-[9px] text-brand-burgundy font-bold tracking-widest uppercase mt-1">Rep Workspace</p>
         </div>
@@ -87,8 +87,8 @@ export default function RepLayout({ children }) {
                 href={link.href}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-205 cursor-pointer group
-                  ${isActive 
-                    ? "bg-brand-burgundy-light text-brand-burgundy border-l-2 border-brand-burgundy shadow-sm" 
+                  ${isActive
+                    ? "bg-brand-burgundy-light text-brand-burgundy border-l-2 border-brand-burgundy shadow-sm"
                     : "text-slate-500 hover:bg-brand-burgundy-light/40 hover:text-slate-800"
                   }
                 `}
@@ -129,7 +129,7 @@ export default function RepLayout({ children }) {
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Representative Portal</p>
             <h2 className="text-sm font-bold text-slate-700">Good morning, <span className="text-slate-900 font-bold">{user.name.split(" ")[0]}</span></h2>
           </div>
-          
+
           <div className="flex items-center gap-3 bg-brand-burgundy-light border border-brand-burgundy/10 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-brand-burgundy shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-brand-burgundy animate-pulse" />
             <span>Active Rep</span>
@@ -139,10 +139,10 @@ export default function RepLayout({ children }) {
         {/* Mobile Header */}
         <header className="md:hidden bg-white/95 backdrop-blur-md border-b border-[#ebdfe1] px-4 py-3 flex items-center justify-between z-20 w-full shadow-sm sticky top-0">
           <div className="flex items-center gap-2">
-            <img 
-              src="/logo.jpg" 
-              alt="Lipistry Logo" 
-              className="h-8 object-contain mix-blend-multiply" 
+            <img
+              src="/logo.jpg"
+              alt="Lipistry Logo"
+              className="h-8 object-contain mix-blend-multiply"
             />
             <span className="text-[9px] font-bold tracking-wider text-brand-burgundy bg-brand-burgundy-light px-2 py-0.5 rounded border border-brand-burgundy/10">REP</span>
           </div>

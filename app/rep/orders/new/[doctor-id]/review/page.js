@@ -11,7 +11,8 @@ import {
   Building2,
   FileText,
   Truck,
-  HelpCircle
+  HelpCircle,
+  ShoppingBag
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -94,14 +95,16 @@ export default function OrderReviewStep() {
     setNewCard((prev) => ({ ...prev, [name]: value }));
   };
 
-  const cartItems = Object.entries(cart).map(([productId, qty]) => {
-    const product = products.find((p) => p.id === productId);
-    return {
-      product,
-      quantity: qty,
-      total: product ? product.case_price * qty : 0
-    };
-  });
+  const cartItems = Object.entries(cart)
+    .map(([productId, qty]) => {
+      const product = products.find((p) => p.id === productId);
+      return {
+        product,
+        quantity: qty,
+        total: product ? product.case_price * qty : 0
+      };
+    })
+    .filter((item) => item.product !== undefined);
 
   const orderTotal = cartItems.reduce((acc, curr) => acc + curr.total, 0);
 
@@ -116,8 +119,8 @@ export default function OrderReviewStep() {
     setSubmitLoading(true);
 
     try {
-      // 1. If entering a new card and opted to save, execute card registration first
-      if (paymentChoice === "new_card" && saveCardForFuture) {
+      // 1. If entering a new card, execute card registration first
+      if (paymentChoice === "new_card") {
         const cardResponse = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${doctorId}/card`,
           {
@@ -136,7 +139,8 @@ export default function OrderReviewStep() {
         );
 
         if (!cardResponse.ok) {
-          throw new Error("Failed to configure billing details on doctor practice account.");
+          const cardErr = await cardResponse.json();
+          throw new Error(cardErr.error || "Failed to configure billing details on doctor practice account.");
         }
       }
 
@@ -242,7 +246,36 @@ export default function OrderReviewStep() {
                 <tbody className="divide-y divide-[#ebdfe1]/30">
                   {cartItems.map((item) => (
                     <tr key={item.product.id}>
-                      <td className="px-3 py-2.5 font-bold text-slate-800">{item.product.name}</td>
+                      <td className="px-3 py-2.5 font-bold text-slate-800">
+                        <div className="flex items-center gap-2">
+                          {(() => {
+                            let firstImg = null;
+                            if (item.product?.images) {
+                              try {
+                                const parsed = typeof item.product.images === "string" ? JSON.parse(item.product.images) : item.product.images;
+                                if (Array.isArray(parsed) && parsed.length > 0) {
+                                  firstImg = parsed[0];
+                                }
+                              } catch (e) {}
+                            }
+                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                            const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
+
+                            return imgUrl ? (
+                              <img 
+                                src={imgUrl} 
+                                alt={item.product.name} 
+                                className="w-8 h-8 object-cover rounded-lg border border-slate-200 shrink-0 shadow-sm" 
+                              />
+                            ) : (
+                              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-400 shrink-0">
+                                <ShoppingBag className="w-4.5 h-4.5" />
+                              </div>
+                            );
+                          })()}
+                          <span>{item.product.name}</span>
+                        </div>
+                      </td>
                       <td className="px-3 py-2.5 text-center text-slate-900 font-extrabold">{item.quantity}</td>
                       <td className="px-3 py-2.5 text-right text-slate-700 font-bold">{formatPrice(item.product.case_price)}</td>
                       <td className="px-3 py-2.5 text-right text-slate-900 font-extrabold">{formatPrice(item.total)}</td>
@@ -376,16 +409,10 @@ export default function OrderReviewStep() {
                   </div>
                 </div>
 
-                {/* Save card checkbox */}
-                <label className="flex items-center gap-2 text-[10px] text-slate-650 font-bold select-none cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={saveCardForFuture}
-                    onChange={(e) => setSaveCardForFuture(e.target.checked)}
-                    className="w-3.5 h-3.5 accent-brand-burgundy rounded cursor-pointer"
-                  />
-                  <span>Save card details for future checkouts</span>
-                </label>
+                {/* Info Text */}
+                <p className="text-[10px] text-slate-500 font-bold">
+                  * Saving this new card will update the default card on file for this practice.
+                </p>
               </div>
             )}
 
