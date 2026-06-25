@@ -223,7 +223,7 @@ export default function RepOrders() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Link
-                          href={`/rep/orders/${o.id}`}
+                          href={`/rep/orders/detail?id=${o.id}`}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-205 text-slate-750 hover:bg-brand-burgundy-light hover:text-brand-burgundy font-bold transition-all cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
