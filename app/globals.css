@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8eff1; /* Soft, warm rose-cream background tone */
+  --foreground: #3f3335; /* Soft, warm charcoal-rose text tone */
+}
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  
+  /* Brand colors: Burgundy Red and warm soft cream from the logo */
+  --color-brand-burgundy: #700c1a;
+  --color-brand-burgundy-light: #fdf6f7;
+  --color-brand-burgundy-hover: #590a14;
+  --color-brand-dark: #271c1e;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Premium white floating cards over warm rose-cream background */
+.glass-panel {
+  background: #ffffff;
+  border: 1px solid #ebdfe1;
+  box-shadow: 0 1px 3px 0 rgba(112, 12, 26, 0.02), 0 1px 2px -1px rgba(112, 12, 26, 0.02);
+}
+
+.glass-card {
+  background: #ffffff;
+  border: 1px solid #ebdfe1;
+  box-shadow: 0 4px 6px -1px rgba(112, 12, 26, 0.02), 0 2px 4px -2px rgba(112, 12, 26, 0.02);
+}
+
+.glass-input {
+  background: #ffffff;
+  border: 1px solid #d4c2c5;
+  color: #3f3335;
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-input:focus {
+  background: #ffffff;
+  border-color: #700c1a;
+  box-shadow: 0 0 0 2px rgba(112, 12, 26, 0.08);
+  outline: none;
+}
+
+/* Accent lighting glows */
+.ambient-light-pink {
+  background: radial-gradient(circle, rgba(112, 12, 26, 0.04) 0%, rgba(255,255,255,0) 70%);
+}
+
+.ambient-light-blue {
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.02) 0%, rgba(255,255,255,0) 70%);
+}
