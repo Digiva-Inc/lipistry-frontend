@@ -628,18 +628,9 @@ export default function AllOrders() {
                       </td>
                       <td className="px-6 py-4 font-extrabold text-slate-800">{formatPrice(o.total_cents)}</td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`px-2.5 py-1 rounded-full text-[9px] font-extrabold border ${getStatusColor(o.status)}`}>
-                            {formatStatus(o.status)}
-                          </span>
-                          <button
-                            onClick={() => handleOpenQuickStatus(o)}
-                            className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-brand-burgundy transition-all cursor-pointer"
-                            title="Edit Status"
-                          >
-                            <Pencil className="w-3 h-3" />
-                          </button>
-                        </div>
+                        <span className={`px-2.5 py-1 rounded-full text-[9px] font-extrabold border ${getStatusColor(o.status)}`}>
+                          {formatStatus(o.status)}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-slate-600 font-semibold">
                         {new Date(o.created_at).toLocaleDateString("en-US", {
@@ -1023,145 +1014,6 @@ export default function AllOrders() {
               >
                 Close Drawer
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Quick Status Edit Modal */}
-      {quickStatusModalOpen && quickOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-6 relative flex flex-col max-h-[90vh]">
-            <button
-              onClick={() => setQuickStatusModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="mb-4 flex items-center gap-2">
-              <Pencil className="w-5 h-5 text-brand-burgundy" />
-              <h2 className="text-base font-extrabold text-slate-900 font-display">Update Order Status</h2>
-            </div>
-
-            <p className="text-xs text-slate-500 font-semibold mb-4">
-              Quickly edit the logistics and status for <span className="font-extrabold text-slate-805">{quickOrder.order_number}</span>.
-            </p>
-
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-left">
-              {quickOrder.status === 'return_requested' ? (
-                <div className="space-y-3 p-4 bg-purple-50/50 border border-purple-200 rounded-xl">
-                  <p className="text-xs font-bold text-purple-800 uppercase tracking-wide">⚠️ Return Requested</p>
-                  <p className="text-xs font-semibold text-slate-650">
-                    A return has been requested by the representative. Please review the return request details in the main view or approve/reject here.
-                  </p>
-                  <div className="flex gap-2 pt-2">
-                    <button
-                      type="button"
-                      disabled={quickUpdating}
-                      onClick={() => handleProcessQuickReturn(true)}
-                      className="flex-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
-                    >
-                      {quickUpdating ? "Processing..." : "Approve & Refund"}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={quickUpdating}
-                      onClick={() => handleProcessQuickReturn(false)}
-                      className="flex-1 px-3 py-2 bg-rose-650 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
-                    >
-                      {quickUpdating ? "Processing..." : "Reject Return"}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleSaveQuickStatus} className="space-y-4 text-xs">
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Fulfillment Status</label>
-                    <select
-                      value={quickStatus}
-                      onChange={(e) => setQuickStatus(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input cursor-pointer"
-                    >
-                      <option value="submitted_warehouse">SUBMITTED TO WAREHOUSE</option>
-                      <option value="confirmed">CONFIRMED</option>
-                      <option value="shipped">SHIPPED</option>
-                      <option value="out_for_delivery">OUT FOR DELIVERY</option>
-                      <option value="delivered">DELIVERED</option>
-                      <option value="cancelled">CANCELLED</option>
-                      {quickOrder.status === 'returned' && (
-                        <option value="returned">RETURNED</option>
-                      )}
-                    </select>
-                  </div>
-
-                  {(quickStatus === 'shipped' || quickStatus === 'out_for_delivery') && (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Shipping Carrier</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. FedEx, UPS"
-                          value={quickCarrier}
-                          onChange={(e) => setQuickCarrier(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Tracking Number</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. 1234567890"
-                          value={quickTrackingNo}
-                          onChange={(e) => setQuickTrackingNo(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Tracking Notes</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Leave at front door"
-                          value={quickNotes}
-                          onChange={(e) => setQuickNotes(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {quickStatus === 'returned' && (
-                    <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-2 text-emerald-900 font-semibold">
-                      <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide">💰 Refund Details</p>
-                      <p>Refund will be confirmed and processed back to the original card details on file:</p>
-                      <div className="p-2 bg-white/80 rounded-lg border border-emerald-200">
-                        <span className="font-extrabold text-slate-800">
-                          {(() => {
-                            const card = getRefundCardDetails(quickOrder.stripe_customer_id);
-                            return card ? card : "Stripe Card on File";
-                          })()}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setQuickStatusModalOpen(false)}
-                      className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-300 text-slate-655 hover:bg-slate-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={quickUpdating}
-                      className="px-4 py-2 bg-brand-burgundy text-white hover:bg-brand-burgundy-dark rounded-xl text-xs font-bold transition-all shadow-sm disabled:opacity-50"
-                    >
-                      {quickUpdating ? "Saving..." : "Save Changes"}
-                    </button>
-                  </div>
-                </form>
-              )}
             </div>
           </div>
         </div>

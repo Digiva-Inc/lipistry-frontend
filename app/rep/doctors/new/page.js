@@ -179,7 +179,7 @@ export default function NewDoctor() {
       }
 
       toast.success("Credit card saved on file!");
-      router.push(`/rep/doctors/${createdDoctorId}`);
+      router.push(`/rep/doctors/detail?id=${createdDoctorId}`);
     } catch (err) {
       toast.error(err.message || "Failed to save credit card on file.");
     } finally {
@@ -475,7 +475,7 @@ export default function NewDoctor() {
               <div className="pt-3 border-t border-[#ebdfe1] flex justify-between gap-2">
                 <button
                   type="button"
-                  onClick={() => router.push(`/rep/doctors/${createdDoctorId}`)}
+                  onClick={() => router.push(`/rep/doctors/detail?id=${createdDoctorId}`)}
                   className="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 border border-slate-200 transition-all cursor-pointer"
                 >
                   Skip for Now

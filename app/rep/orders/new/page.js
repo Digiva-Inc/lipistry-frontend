@@ -109,7 +109,7 @@ export default function SelectDoctorStep() {
               filteredDoctors.map((doc) => (
                 <button
                   key={doc.id}
-                  onClick={() => router.push(`/rep/orders/new/${doc.id}`)}
+                  onClick={() => router.push(`/rep/orders/new/build?doctorId=${doc.id}`)}
                   className="w-full p-3 text-left rounded-xl border border-slate-200 hover:border-brand-burgundy hover:bg-slate-50/50 transition-all flex justify-between items-center group cursor-pointer"
                 >
                   <div className="space-y-0.5">

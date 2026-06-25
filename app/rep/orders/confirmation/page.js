@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { 
   Loader2, 
@@ -16,9 +16,10 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 
-export default function OrderConfirmation() {
+function OrderConfirmationContent() {
   const router = useRouter();
-  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const { token } = useAuthStore();
 
   const [loading, setLoading] = useState(true);
@@ -116,7 +117,7 @@ export default function OrderConfirmation() {
         {/* Doctor and Shopify warehouse */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Practice Client</h4>
+            <h4 className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Practice Client</h4>
             <div className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5 text-brand-burgundy shrink-0" />
               <span>{order.doctor_practice}</span>
@@ -124,7 +125,7 @@ export default function OrderConfirmation() {
             <div className="text-[10px] text-slate-650 font-bold">Dr. {order.doctor_first_name} {order.doctor_last_name}</div>
           </div>
           <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Shopify Fulfillment</h4>
+            <h4 className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Shopify Fulfillment</h4>
             <div className="p-2 bg-brand-burgundy-light/35 border border-brand-burgundy/10 rounded-xl">
               <p className="text-[10px] font-bold text-brand-burgundy">Status: QUEUED FOR SHIPMENT</p>
               <p className="text-[9px] font-mono text-slate-505 font-bold mt-0.5">Reference: {order.shopify_order_number || "SH_Pending"}</p>
@@ -142,7 +143,7 @@ export default function OrderConfirmation() {
           <div className="border border-[#ebdfe1] rounded-xl overflow-hidden">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-slate-500 font-bold border-b border-[#ebdfe1]">
+                <tr className="bg-slate-50 text-slate-505 font-bold border-b border-[#ebdfe1]">
                   <th className="px-3 py-2">Product</th>
                   <th className="px-3 py-2 text-center">Cases</th>
                   <th className="px-3 py-2 text-right">Price</th>
@@ -224,5 +225,20 @@ export default function OrderConfirmation() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function OrderConfirmation() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
+          <p className="text-slate-550 text-xs font-bold tracking-wider">Syncing confirmation details...</p>
+        </div>
+      </div>
+    }>
+      <OrderConfirmationContent />
+    </Suspense>
   );
 }
