@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { 
   ShoppingBag, 
   Plus, 
@@ -13,12 +14,14 @@ import {
   Layers, 
   CheckCircle,
   XCircle,
-  FileCode2
+  FileCode2,
+  Eye
 } from "lucide-react";
 import { useAuthStore } from "../../../store/authStore";
 import { toast } from "sonner";
 
 export default function ManageProducts() {
+  const router = useRouter();
   const { token } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
@@ -27,6 +30,7 @@ export default function ManageProducts() {
   // Modals state
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Form states (with price represented as string to allow standard decimal typing)
@@ -40,8 +44,16 @@ export default function ManageProducts() {
     shopify_variant_id: "",
     active: 1
   });
-  
+
+  const [uploadedImages, setUploadedImages] = useState([]);
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+    return `${baseUrl}${path}`;
+  };
 
   async function fetchProducts() {
     try {
@@ -83,7 +95,13 @@ export default function ManageProducts() {
       shopify_variant_id: "",
       active: 1
     });
+    setUploadedImages([]);
     setAddModalOpen(true);
+  };
+
+  const handleOpenView = (prod) => {
+    setSelectedProduct(prod);
+    setViewModalOpen(true);
   };
 
   const handleOpenEdit = (prod) => {
@@ -98,7 +116,58 @@ export default function ManageProducts() {
       shopify_variant_id: prod.shopify_variant_id || "",
       active: prod.active
     });
+    
+    // Parse images array
+    let parsedImages = [];
+    if (prod.images) {
+      try {
+        parsedImages = typeof prod.images === "string" ? JSON.parse(prod.images) : prod.images;
+      } catch (e) {
+        parsedImages = [];
+      }
+    }
+    setUploadedImages(Array.isArray(parsedImages) ? parsedImages : []);
     setEditModalOpen(true);
+  };
+
+  // Image Upload handler
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const uploadFormData = new FormData();
+    files.forEach((file) => {
+      uploadFormData.append("files", file);
+    });
+
+    const uploadToast = toast.loading("Uploading images...");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products/upload`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: uploadFormData
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to upload images.");
+      }
+
+      setUploadedImages((prev) => [...prev, ...result.urls]);
+      toast.success("Images uploaded successfully!", { id: uploadToast });
+    } catch (err) {
+      toast.error(err.message || "Failed to upload images.", { id: uploadToast });
+    }
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setUploadedImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
   // Create product submission
@@ -126,7 +195,8 @@ export default function ManageProducts() {
           body: JSON.stringify({
             ...formData,
             case_price: priceCents,
-            units_per_case: parseInt(formData.units_per_case)
+            units_per_case: parseInt(formData.units_per_case),
+            images: uploadedImages
           })
         }
       );
@@ -171,7 +241,8 @@ export default function ManageProducts() {
           body: JSON.stringify({
             ...formData,
             case_price: priceCents,
-            units_per_case: parseInt(formData.units_per_case)
+            units_per_case: parseInt(formData.units_per_case),
+            images: uploadedImages
           })
         }
       );
@@ -191,6 +262,12 @@ export default function ManageProducts() {
       setSubmitLoading(false);
     }
   };
+
+  // Redirect to Inventory page for stock management
+  const handleOpenAdjustStock = (prod) => {
+    router.push("/admin/inventory");
+  };
+
 
   const filteredProducts = products.filter(
     (prod) =>
@@ -259,62 +336,116 @@ export default function ManageProducts() {
           ) : (
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                <tr className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 text-[10px] uppercase tracking-wider whitespace-nowrap">
+                  <th className="px-6 py-3.5 w-16">Image</th>
                   <th className="px-6 py-3.5">Product Name</th>
                   <th className="px-6 py-3.5">SKU Code</th>
                   <th className="px-6 py-3.5">Case Price</th>
                   <th className="px-6 py-3.5 text-center">Units / Case</th>
-                  <th className="px-6 py-3.5">Shopify ID / Variant ID</th>
-                  <th className="px-6 py-3.5">Status</th>
+                  <th className="px-6 py-3.5 text-center">Available Stock</th>
+                  <th className="px-6 py-3.5 text-center">Status</th>
                   <th className="px-6 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredProducts.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-slate-900">{prod.name}</div>
-                      {prod.description && (
-                        <div className="text-[10px] text-slate-550 mt-0.5 max-w-xs truncate font-semibold">{prod.description}</div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 font-bold text-slate-700">{prod.sku}</td>
-                    <td className="px-6 py-4 font-extrabold text-slate-800">{formatPrice(prod.case_price)}</td>
-                    <td className="px-6 py-4 text-center font-bold text-slate-800">{prod.units_per_case}</td>
-                    <td className="px-6 py-4">
-                      {prod.shopify_product_id ? (
-                        <div className="space-y-0.5 font-mono text-[9px] text-slate-500 font-semibold">
-                          <div>P: {prod.shopify_product_id}</div>
-                          <div>V: {prod.shopify_variant_id}</div>
+                {filteredProducts.map((prod) => {
+                  let imgUrl = null;
+                  if (prod.images) {
+                    try {
+                      const parsed = typeof prod.images === "string" ? JSON.parse(prod.images) : prod.images;
+                      if (Array.isArray(parsed) && parsed.length > 0) {
+                        imgUrl = parsed[0];
+                      }
+                    } catch (e) {}
+                  }
+
+                  return (
+                    <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors align-middle">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {imgUrl ? (
+                          <a 
+                            href={getImageUrl(imgUrl)} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="block cursor-pointer hover:opacity-80 transition-opacity w-10 h-10"
+                          >
+                            <img 
+                              src={getImageUrl(imgUrl)} 
+                              alt={prod.name} 
+                              className="w-10 h-10 object-cover rounded-lg border border-slate-200 shadow-sm" 
+                            />
+                          </a>
+                        ) : (
+                          <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-400">
+                            <ShoppingBag className="w-5 h-5" />
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-extrabold text-slate-900 text-xs">{prod.name}</div>
+                        {prod.description && (
+                          <div className="text-[10px] text-slate-500 mt-0.5 max-w-xs truncate font-medium">{prod.description}</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 py-0.5 font-mono text-[10px] font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded">
+                          {prod.sku}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-black text-slate-900 whitespace-nowrap">{formatPrice(prod.case_price)}</td>
+                      <td className="px-6 py-4 text-center font-bold text-slate-700 whitespace-nowrap">{prod.units_per_case}</td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black border ${
+                          (prod.stock_cases || 0) > 10
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : (prod.stock_cases || 0) > 0
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-rose-50 text-rose-700 border-rose-200"
+                        }`}>
+                          {prod.stock_cases !== undefined ? prod.stock_cases : 0} cases
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap">
+                        {prod.active ? (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            <CheckCircle className="w-2.5 h-2.5" />
+                            <span>ACTIVE</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-slate-500 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">
+                            <XCircle className="w-2.5 h-2.5" />
+                            <span>INACTIVE</span>
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleOpenAdjustStock(prod)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 bg-indigo-50/50 hover:bg-indigo-100 hover:text-indigo-700 border border-indigo-100 font-bold transition-all cursor-pointer shadow-sm text-[11px]"
+                          >
+                            <Layers className="w-3.5 h-3.5 text-indigo-650" />
+                            <span>Stock</span>
+                          </button>
+                          <button
+                            onClick={() => handleOpenView(prod)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200 font-bold transition-all cursor-pointer shadow-sm"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-slate-500" />
+                            <span>View</span>
+                          </button>
+                          <button
+                            onClick={() => handleOpenEdit(prod)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer shadow-sm"
+                          >
+                            <Edit className="w-3.5 h-3.5 text-brand-burgundy" />
+                            <span>Edit</span>
+                          </button>
                         </div>
-                      ) : (
-                        <span className="text-[10px] text-slate-400 font-bold italic">Not synced</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      {prod.active ? (
-                        <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                          <CheckCircle className="w-2.5 h-2.5" />
-                          <span>ACTIVE</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-slate-505 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">
-                          <XCircle className="w-2.5 h-2.5" />
-                          <span>INACTIVE</span>
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleOpenEdit(prod)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
-                      >
-                        <Edit className="w-3.5 h-3.5 text-brand-burgundy" />
-                        <span>Edit</span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
@@ -324,7 +455,7 @@ export default function ManageProducts() {
       {/* Add Product Modal */}
       {addModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="glass-card rounded-2xl border border-slate-200 p-6 w-full max-w-md relative overflow-hidden shadow-2xl">
+          <div className="glass-card rounded-2xl border border-slate-205 p-6 w-full max-w-lg relative overflow-y-auto max-h-[90vh] shadow-2xl">
             <button
               onClick={() => setAddModalOpen(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
@@ -351,6 +482,48 @@ export default function ManageProducts() {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full pl-9 pr-4 py-2 rounded-xl text-xs font-semibold glass-input"
                   />
+                </div>
+              </div>
+
+              {/* Product Images Uploader */}
+              <div>
+                <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Product Images</label>
+                <div className="space-y-3">
+                  {uploadedImages.length > 0 && (
+                    <div className="grid grid-cols-4 gap-2 border border-slate-200 p-2.5 rounded-xl bg-slate-50">
+                      {uploadedImages.map((imgUrl, idx) => (
+                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-white">
+                          <a href={getImageUrl(imgUrl)} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                            <img src={getImageUrl(imgUrl)} alt="Preview" className="w-full h-full object-cover hover:opacity-85 transition-opacity cursor-pointer" />
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(idx)}
+                            className="absolute top-1 right-1 p-0.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full transition-colors cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100/50 transition-colors">
+                      <div className="flex flex-col items-center justify-center pt-4 pb-4">
+                        <Plus className="w-6 h-6 text-slate-400 mb-1" />
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Upload Product Images (Multiple)</p>
+                        <p className="text-[9px] text-slate-400 font-medium mt-0.5">PNG, JPG, JPEG up to 5MB</p>
+                      </div>
+                      <input 
+                        type="file" 
+                        multiple 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={handleImageUpload} 
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -440,7 +613,7 @@ export default function ManageProducts() {
                 </div>
               </div>
 
-              <div className="pt-3 flex justify-end gap-3">
+              <div className="pt-3 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setAddModalOpen(false)}
@@ -451,7 +624,7 @@ export default function ManageProducts() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
                 >
                   {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                   <span>Create Product</span>
@@ -465,7 +638,7 @@ export default function ManageProducts() {
       {/* Edit Product Modal */}
       {editModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="glass-card rounded-2xl border border-slate-200 p-6 w-full max-w-md relative overflow-hidden shadow-2xl">
+          <div className="glass-card rounded-2xl border border-slate-205 p-6 w-full max-w-lg relative overflow-y-auto max-h-[90vh] shadow-2xl">
             <button
               onClick={() => setEditModalOpen(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
@@ -491,6 +664,48 @@ export default function ManageProducts() {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full pl-9 pr-4 py-2 rounded-xl text-xs font-semibold glass-input"
                   />
+                </div>
+              </div>
+
+              {/* Product Images Uploader */}
+              <div>
+                <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Product Images</label>
+                <div className="space-y-3">
+                  {uploadedImages.length > 0 && (
+                    <div className="grid grid-cols-4 gap-2 border border-slate-202 p-2.5 rounded-xl bg-slate-55">
+                      {uploadedImages.map((imgUrl, idx) => (
+                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-white">
+                          <a href={getImageUrl(imgUrl)} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                            <img src={getImageUrl(imgUrl)} alt="Preview" className="w-full h-full object-cover hover:opacity-85 transition-opacity cursor-pointer" />
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(idx)}
+                            className="absolute top-1 right-1 p-0.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full transition-colors cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100/50 transition-colors">
+                      <div className="flex flex-col items-center justify-center pt-4 pb-4">
+                        <Plus className="w-6 h-6 text-slate-400 mb-1" />
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Upload Product Images (Multiple)</p>
+                        <p className="text-[9px] text-slate-400 font-medium mt-0.5">PNG, JPG, JPEG up to 5MB</p>
+                      </div>
+                      <input 
+                        type="file" 
+                        multiple 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={handleImageUpload} 
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -588,7 +803,7 @@ export default function ManageProducts() {
                 />
               </div>
 
-              <div className="pt-3 flex justify-end gap-3">
+              <div className="pt-3 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setEditModalOpen(false)}
@@ -599,7 +814,7 @@ export default function ManageProducts() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
                 >
                   {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                   <span>Save Changes</span>
@@ -609,6 +824,142 @@ export default function ManageProducts() {
           </div>
         </div>
       )}
+
+      {/* View Product Modal */}
+      {viewModalOpen && selectedProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="glass-card rounded-2xl border border-slate-200 p-6 w-full max-w-xl relative overflow-y-auto max-h-[90vh] shadow-2xl flex flex-col">
+            <button
+              onClick={() => setViewModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="mb-5 flex items-center gap-2 shrink-0">
+              <Eye className="w-5 h-5 text-brand-burgundy" />
+              <h2 className="text-base font-extrabold text-slate-900">Product Details</h2>
+            </div>
+
+            <div className="space-y-6 overflow-y-auto pr-1 flex-1 text-left">
+              <div>
+                <h3 className="text-sm font-black text-slate-800">{selectedProduct.name}</h3>
+                {selectedProduct.description && (
+                  <p className="text-xs text-slate-500 font-semibold mt-1 leading-relaxed whitespace-pre-line">{selectedProduct.description}</p>
+                )}
+              </div>
+
+              {/* Product Info Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">SKU Code</span>
+                  <span className="text-xs font-bold text-slate-800">{selectedProduct.sku}</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Status</span>
+                  {selectedProduct.active ? (
+                    <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full mt-1">
+                      <CheckCircle className="w-2.5 h-2.5" />
+                      <span>ACTIVE</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-slate-505 bg-slate-55 border border-slate-200 px-2 py-0.5 rounded-full mt-1">
+                      <XCircle className="w-2.5 h-2.5" />
+                      <span>INACTIVE</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Price Details */}
+              <div className="grid grid-cols-3 gap-4 bg-brand-burgundy-light/35 p-4 rounded-xl border border-brand-burgundy/10">
+                <div>
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Case Price</span>
+                  <span className="text-brand-burgundy font-black text-xs block mt-0.5">{formatPrice(selectedProduct.case_price)}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Units / Case</span>
+                  <span className="text-slate-800 font-extrabold text-xs block mt-0.5">{selectedProduct.units_per_case}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Unit Cost</span>
+                  <span className="text-slate-800 font-extrabold text-xs block mt-0.5">
+                    {formatPrice(Math.round(selectedProduct.case_price / selectedProduct.units_per_case))}
+                  </span>
+                </div>
+              </div>
+              {/* Local Inventory Stock & Shopify Sync (Secondary) */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                  <span className="text-[9px] text-emerald-800 font-bold uppercase tracking-wider block mb-1">Available Stock</span>
+                  <span className="text-xs font-black text-emerald-850 block mt-0.5">{selectedProduct.stock_cases !== undefined ? selectedProduct.stock_cases : 0} cases</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Shopify Product ID</span>
+                  <span className="text-xs font-mono font-semibold text-slate-600 truncate block">{selectedProduct.shopify_product_id || "N/A"}</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Shopify Variant ID</span>
+                  <span className="text-xs font-mono font-semibold text-slate-600 truncate block">{selectedProduct.shopify_variant_id || "N/A"}</span>
+                </div>
+              </div>
+
+              {/* Image Gallery */}
+              <div className="space-y-3">
+                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Product Images Gallery</span>
+                {(() => {
+                  let images = [];
+                  if (selectedProduct.images) {
+                    try {
+                      images = typeof selectedProduct.images === "string" ? JSON.parse(selectedProduct.images) : selectedProduct.images;
+                    } catch (e) {}
+                  }
+                  if (!Array.isArray(images) || images.length === 0) {
+                    return (
+                      <div className="p-8 text-center text-xs font-semibold text-slate-450 border border-dashed border-slate-300 rounded-xl bg-slate-50">
+                        No images uploaded for this product.
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="grid grid-cols-3 gap-3">
+                      {images.map((img, idx) => (
+                        <a 
+                          key={idx} 
+                          href={getImageUrl(img)} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="group relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white hover:border-brand-burgundy/50 hover:shadow-md transition-all duration-200 cursor-pointer"
+                        >
+                          <img 
+                            src={getImageUrl(img)} 
+                            alt={`${selectedProduct.name} ${idx + 1}`} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="text-[9px] text-white font-bold bg-black/50 px-2 py-1 rounded-full">Open Original</span>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-200 mt-6 flex justify-end shrink-0">
+              <button
+                onClick={() => setViewModalOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Close Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+

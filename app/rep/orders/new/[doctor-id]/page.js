@@ -10,7 +10,8 @@ import {
   Plus, 
   Minus,
   Building2,
-  ChevronRight
+  ChevronRight,
+  ShoppingBag
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -95,14 +96,16 @@ export default function BuildOrderStep() {
     router.push(`/rep/orders/new/${doctorId}/review`);
   };
 
-  const cartItems = Object.entries(cart).map(([productId, qty]) => {
-    const product = products.find((p) => p.id === productId);
-    return {
-      product,
-      quantity: qty,
-      total: product ? product.case_price * qty : 0
-    };
-  });
+  const cartItems = Object.entries(cart)
+    .map(([productId, qty]) => {
+      const product = products.find((p) => p.id === productId);
+      return {
+        product,
+        quantity: qty,
+        total: product ? product.case_price * qty : 0
+      };
+    })
+    .filter((item) => item.product !== undefined);
 
   const subtotal = cartItems.reduce((acc, curr) => acc + curr.total, 0);
 
@@ -170,12 +173,40 @@ export default function BuildOrderStep() {
               const qty = cart[prod.id] || 0;
               return (
                 <div key={prod.id} className="p-4 bg-white rounded-2xl border border-[#ebdfe1] shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-bold text-slate-900">{prod.name}</h4>
-                    <div className="flex gap-2 text-[10px] text-slate-500 font-semibold">
-                      <span>SKU: {prod.sku}</span>
-                      <span>•</span>
-                      <span>{prod.units_per_case} units/case</span>
+                  <div className="flex items-center gap-3">
+                    {(() => {
+                      let firstImg = null;
+                      if (prod.images) {
+                        try {
+                          const parsed = typeof prod.images === "string" ? JSON.parse(prod.images) : prod.images;
+                          if (Array.isArray(parsed) && parsed.length > 0) {
+                            firstImg = parsed[0];
+                          }
+                        } catch (e) {}
+                      }
+                      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                      const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
+
+                      return imgUrl ? (
+                        <img 
+                          src={imgUrl} 
+                          alt={prod.name} 
+                          className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0 shadow-sm" 
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center border border-slate-200 text-slate-400 shrink-0">
+                          <ShoppingBag className="w-6 h-6" />
+                        </div>
+                      );
+                    })()}
+                    
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-bold text-slate-900">{prod.name}</h4>
+                      <div className="flex gap-2 text-[10px] text-slate-500 font-semibold">
+                        <span>SKU: {prod.sku}</span>
+                        <span>•</span>
+                        <span>{prod.units_per_case} units/case</span>
+                      </div>
                     </div>
                   </div>
 

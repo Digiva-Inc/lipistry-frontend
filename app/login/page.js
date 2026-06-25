@@ -79,7 +79,7 @@ export default function LoginPage() {
       // Save token and user details to Zustand
       setAuth(result.token, result.user);
       toast.success(`Welcome back, ${result.user.name}!`);
-      
+
       // Redirect based on role
       if (result.user.role === "admin") {
         router.push("/admin");
@@ -155,10 +155,10 @@ export default function LoginPage() {
         {/* Brand Logo & Header */}
         <div className="flex flex-col items-center mb-8 text-center animate-fadeIn">
           {/* Official Logo Image */}
-          <img 
-            src="/logo.jpg" 
-            alt="Lipistry Logo" 
-            className="w-48 object-contain mb-1 mix-blend-multiply" 
+          <img
+            src="/logo.png"
+            alt="Lipistry Logo"
+            className="w-96 object-contain mb-1 mix-blend-multiply"
           />
           <p className="text-slate-500 text-[10px] font-bold tracking-widest uppercase">
             SALES REPRESENTATIVE PORTAL
@@ -169,7 +169,7 @@ export default function LoginPage() {
         <div className="glass-card rounded-2xl p-8 relative overflow-hidden border border-slate-200 shadow-xl shadow-slate-100/50">
           {/* Top panel border highlight - Burgundy */}
           <div className="absolute top-0 left-0 right-0 h-[3px] bg-brand-burgundy" />
-          
+
           <div className="mb-6">
             <h2 className="text-lg font-bold text-slate-900 tracking-tight">Sign In</h2>
             <p className="text-slate-500 text-xs mt-1">
@@ -210,9 +210,8 @@ export default function LoginPage() {
                 <input
                   type="email"
                   placeholder="name@lipistry.com"
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl text-sm font-semibold glass-input ${
-                    errors.email ? "border-red-500/50 focus:border-red-500/50" : ""
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl text-sm font-semibold glass-input ${errors.email ? "border-red-500/50 focus:border-red-500/50" : ""
+                    }`}
                   {...register("email", {
                     required: "Email address is required",
                     pattern: {
@@ -251,9 +250,8 @@ export default function LoginPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`w-full pl-10 pr-10 py-3 rounded-xl text-sm font-semibold glass-input ${
-                    errors.password ? "border-red-500/50 focus:border-red-500/50" : ""
-                  }`}
+                  className={`w-full pl-10 pr-10 py-3 rounded-xl text-sm font-semibold glass-input ${errors.password ? "border-red-500/50 focus:border-red-500/50" : ""
+                    }`}
                   {...register("password", {
                     required: "Password is required",
                   })}
