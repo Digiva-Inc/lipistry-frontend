@@ -450,6 +450,8 @@ export default function AllOrders() {
         return "bg-green-50 text-green-700 border-green-200";
       case "cancelled":
         return "bg-rose-50 text-rose-700 border-rose-200";
+      case "failed_payment":
+        return "bg-rose-50 text-rose-700 border-rose-200";
       case "return_requested":
         return "bg-purple-50 text-purple-700 border-purple-200";
       case "return_approved":

@@ -104,6 +104,8 @@ export default function OrderDetail() {
         return "bg-green-50 text-green-700 border-green-200";
       case "cancelled":
         return "bg-rose-50 text-rose-700 border-rose-200";
+      case "failed_payment":
+        return "bg-rose-50 text-rose-700 border-rose-200";
       case "return_requested":
         return "bg-purple-50 text-purple-700 border-purple-200";
       case "return_approved":
@@ -199,15 +201,27 @@ export default function OrderDetail() {
     const { order } = orderDetail;
     const steps = [];
     
-    // Step 1: Placed
-    steps.push({
-      key: "paid",
-      title: "Order Placed & Paid",
-      description: "Wholesale order successfully created and Stripe payment authorization completed.",
-      timestamp: order.created_at,
-      isActive: true,
-      icon: CreditCard,
-    });
+    // Step 1: Placed / Paid / Failed
+    if (order.status === "failed_payment") {
+      steps.push({
+        key: "failed_payment",
+        title: "Payment Attempt Failed",
+        description: "Wholesale order checkout was attempted, but the payment failed or was declined.",
+        timestamp: order.created_at,
+        isActive: true,
+        isCancelled: true,
+        icon: XCircle,
+      });
+    } else {
+      steps.push({
+        key: "paid",
+        title: "Order Placed & Paid",
+        description: "Wholesale order successfully created and Stripe payment authorization completed.",
+        timestamp: order.created_at,
+        isActive: true,
+        icon: CreditCard,
+      });
+    }
 
     // Step 2: Submitted to Warehouse
     const submittedActive = ["submitted_warehouse", "confirmed", "shipped", "out_for_delivery", "delivered", "return_requested", "returned"].includes(order.status);

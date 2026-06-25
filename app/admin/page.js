@@ -97,6 +97,8 @@ export default function AdminDashboard() {
         return "bg-blue-50 text-blue-700 border-blue-200";
       case "cancelled":
         return "bg-rose-50 text-rose-700 border-rose-200";
+      case "failed_payment":
+        return "bg-rose-50 text-rose-700 border-rose-200";
       case "return_requested":
         return "bg-purple-50 text-purple-700 border-purple-200";
       case "return_approved":
