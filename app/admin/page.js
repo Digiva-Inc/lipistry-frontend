@@ -82,19 +82,39 @@ export default function AdminDashboard() {
   const getStatusColor = (status) => {
     switch (status) {
       case "paid":
-        return "bg-emerald-55 text-emerald-700 border-emerald-200";
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
       case "submitted_warehouse":
         return "bg-sky-50 text-sky-700 border-sky-200";
+      case "confirmed":
+        return "bg-indigo-50 text-indigo-700 border-indigo-200";
+      case "shipped":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+      case "out_for_delivery":
+        return "bg-amber-50 text-amber-700 border-amber-200";
+      case "delivered":
+        return "bg-green-50 text-green-700 border-green-200";
       case "fulfilled":
         return "bg-blue-50 text-blue-700 border-blue-200";
       case "cancelled":
         return "bg-rose-50 text-rose-700 border-rose-200";
+      case "return_requested":
+        return "bg-purple-50 text-purple-700 border-purple-200";
+      case "return_approved":
+        return "bg-pink-50 text-pink-700 border-pink-200";
+      case "returned":
+        return "bg-teal-50 text-teal-700 border-teal-200";
+      case "refunded":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
       default:
         return "bg-amber-50 text-amber-700 border-amber-200";
     }
   };
 
   const formatStatus = (status) => {
+    if (!status) return "";
+    if (status === 'return_approved') return 'RETURN APPROVED';
+    if (status === 'returned') return 'RETURNED TO WAREHOUSE';
+    if (status === 'refunded') return 'AMOUNT REFUNDED';
     return status.replace(/_/g, ' ').toUpperCase();
   };
 

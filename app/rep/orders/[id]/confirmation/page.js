@@ -10,7 +10,8 @@ import {
   Home, 
   PlusCircle,
   FileSpreadsheet,
-  Building2
+  Building2,
+  ShoppingBag
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -151,7 +152,36 @@ export default function OrderConfirmation() {
               <tbody className="divide-y divide-[#ebdfe1]/30">
                 {items.map((item) => (
                   <tr key={item.id}>
-                    <td className="px-3 py-2.5 font-bold text-slate-800">{item.product_name || "Product"}</td>
+                    <td className="px-3 py-2.5 font-bold text-slate-800">
+                      <div className="flex items-center gap-2">
+                        {(() => {
+                          let firstImg = null;
+                          if (item.product_images) {
+                            try {
+                              const parsed = typeof item.product_images === "string" ? JSON.parse(item.product_images) : item.product_images;
+                              if (Array.isArray(parsed) && parsed.length > 0) {
+                                firstImg = parsed[0];
+                              }
+                            } catch (e) {}
+                          }
+                          const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                          const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
+
+                          return imgUrl ? (
+                            <img 
+                              src={imgUrl} 
+                              alt={item.product_name} 
+                              className="w-8 h-8 object-cover rounded-lg border border-slate-200 shrink-0 shadow-sm print:hidden" 
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-400 shrink-0 print:hidden">
+                              <ShoppingBag className="w-4.5 h-4.5" />
+                            </div>
+                          );
+                        })()}
+                        <span>{item.product_name || "Product"}</span>
+                      </div>
+                    </td>
                     <td className="px-3 py-2.5 text-center text-slate-900 font-extrabold">{item.quantity_cases}</td>
                     <td className="px-3 py-2.5 text-right text-slate-700 font-bold">{formatPrice(item.case_price_snapshot)}</td>
                     <td className="px-3 py-2.5 text-right text-slate-900 font-extrabold">{formatPrice(item.case_price_snapshot * item.quantity_cases)}</td>
