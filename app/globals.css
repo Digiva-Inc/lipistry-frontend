@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8eff1; /* Soft, warm rose-cream background tone */
+  --background: #fffafb; /* Soft, warm rose-cream background tone */
   --foreground: #3f3335; /* Soft, warm charcoal-rose text tone */
 }
 
@@ -10,7 +10,7 @@
   --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
   
   /* Brand colors: Burgundy Red and warm soft cream from the logo */
-  --color-brand-burgundy: #700c1a;
+  --color-brand-burgundy: #700c;
   --color-brand-burgundy-light: #fdf6f7;
   --color-brand-burgundy-hover: #590a14;
   --color-brand-burgundy-dark: #42060e;
@@ -102,3 +102,17 @@ body {
   background: rgba(112, 12, 26, 0.3);
 }
 
+/* Move Sonner close button to the top-right */
+[data-sonner-toast] [data-close-button] {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+/* Optional: leave some space so the text doesn't overlap */
+[data-sonner-toast] {
+  position: relative;
+  padding-right: 40px !important;
+}
