@@ -30,9 +30,9 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     // Client-side authentication and role guard
     if (!isAuthenticated) {
-      router.push("/login");
+      router.push("/");
     } else if (user && user.role !== "admin") {
-      router.push("/login");
+      router.push("/");
       toast.error("Unauthorized access. Admin privileges required.");
     } else {
       setAuthorized(true);
@@ -42,7 +42,7 @@ export default function AdminLayout({ children }) {
   const handleLogout = () => {
     clearAuth();
     toast.info("Signed out successfully.");
-    router.push("/login");
+    router.push("/");
   };
 
   if (!authorized || !user) {
@@ -67,7 +67,7 @@ export default function AdminLayout({ children }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8eff1] text-slate-800 flex flex-col md:flex-row relative overflow-hidden">
+    <div className="h-screen bg-[#f8eff1] text-slate-800 flex flex-col md:flex-row relative overflow-hidden">
       {/* Background Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] ambient-light-pink rounded-full pointer-events-none z-0" />
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] ambient-light-blue rounded-full pointer-events-none z-0" />
@@ -76,7 +76,7 @@ export default function AdminLayout({ children }) {
       <header className="md:hidden bg-white/80 backdrop-blur-md border-b border-brand-burgundy/10 px-4 py-3 flex items-center justify-between z-20 w-full shadow-sm sticky top-0">
         <div className="flex items-center gap-2">
           <img
-            src="/logo.png"
+            src="/logo.svg"
             alt="Lipistry Logo"
             className="h-8 object-contain mix-blend-multiply"
           />
@@ -91,20 +91,40 @@ export default function AdminLayout({ children }) {
       </header>
 
       {/* Sidebar Navigation */}
-      <aside className={`
-        fixed inset-y-0 left-0 w-64 bg-white/70 backdrop-blur-md border-r border-brand-burgundy/10 p-5 flex flex-col z-30 transition-transform duration-300 md:translate-x-0 md:static md:h-screen shrink-0 shadow-sm
-        ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
-      `}>
+      <aside
+        className={`
+    fixed inset-y-0 left-0
+    w-64
+    bg-white/70
+    backdrop-blur-md
+    border-r border-brand-burgundy/10
+    p-5
+    flex
+    flex-col
+    shrink-0
+    shadow-sm
+    z-30
+    transition-transform duration-300
+    md:relative
+    md:translate-x-0
+    h-full
+    ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+  `}
+      >
         {/* Brand Logo */}
-        <div className="hidden md:flex flex-col items-start gap-1 mb-8 relative group">
+        {/* Brand Logo - Desktop */}
+        <div className="flex flex-col items-center justify-center gap-2 mb-8 relative group w-full">
           <img
-            src="/logo.png"
+            src="/logo.svg"
             alt="Lipistry Logo"
-            className="h-10 object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+            className="h-12 w-auto object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="flex items-center gap-1.5 mt-1">
+
+          <div className="flex items-center justify-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-rose-gold animate-pulse" />
-            <p className="text-[9px] text-brand-burgundy font-extrabold tracking-widest uppercase font-display">IT Admin Console</p>
+            <p className="text-[9px] text-brand-burgundy font-extrabold tracking-[0.2em] uppercase font-display text-center">
+              Admin Workspace
+            </p>
           </div>
         </div>
 
@@ -159,7 +179,7 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* Main Content Pane */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto z-10 relative">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Top Header - Desktop only */}
         <header className="hidden md:flex bg-white/75 backdrop-blur-md border-b border-brand-burgundy/10 px-8 py-4.5 items-center justify-between shrink-0 shadow-sm z-20">
           <div>
@@ -174,7 +194,7 @@ export default function AdminLayout({ children }) {
         </header>
 
         {/* Content Children - Flowing background */}
-        <main className="flex-1 p-4 md:p-8 bg-transparent">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-8 py-6 bg-transparent">
           {children}
         </main>
       </div>

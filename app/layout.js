@@ -15,25 +15,28 @@ const inter = Inter({
 
 export const metadata = {
   title: "Lipistry | Sales Representative Portal",
-  description: "Secure practitioner account management and Shopify order routing for Lipistry field sales reps.",
+  description:
+    "Secure practitioner account management and Shopify order routing for Lipistry field sales reps.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${inter.variable} h-full antialiased`}
+      className={`${outfit.variable} ${inter.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-slate-950 text-slate-100 relative overflow-x-hidden selection:bg-pink-500/30 selection:text-pink-200">
+      <body className="h-screen overflow-hidden font-sans relative">
         {/* Ambient backdrop glow */}
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] ambient-light-pink rounded-full pointer-events-none z-0" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] ambient-light-blue rounded-full pointer-events-none z-0" />
-        
-        <main className="relative z-10 flex-1 flex flex-col">
-          {children}
-        </main>
-        
-        <Toaster position="top-right" theme="dark" richColors closeButton />
+        <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] ambient-light-pink rounded-full pointer-events-none -z-10" />
+        <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] ambient-light-blue rounded-full pointer-events-none -z-10" />
+
+        {children}
+
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+        />
       </body>
     </html>
   );
