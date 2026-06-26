@@ -76,7 +76,7 @@ export default function AdminLayout({ children }) {
       <header className="md:hidden bg-white/80 backdrop-blur-md border-b border-brand-burgundy/10 px-4 py-3 flex items-center justify-between z-20 w-full shadow-sm sticky top-0">
         <div className="flex items-center gap-2">
           <img
-            src="/logo.svg"
+            src="/Logo.svg"
             alt="Lipistry Logo"
             className="h-8 object-contain mix-blend-multiply"
           />
@@ -115,7 +115,7 @@ export default function AdminLayout({ children }) {
         {/* Brand Logo - Desktop */}
         <div className="flex flex-col items-center justify-center gap-2 mb-8 relative group w-full">
           <img
-            src="/logo.svg"
+            src="/Logo.svg"
             alt="Lipistry Logo"
             className="h-12 w-auto object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
           />

@@ -155,7 +155,7 @@ export default function LoginPage() {
           {/* Logo + tag — tightly grouped */}
           <div className="animate-rise-1 flex flex-col items-center mb-3">
             <img
-              src="/logo.svg"
+              src="/Logo.svg"
               alt="Lipistry"
               className="object-contain mb-2"
               style={{ width: 230, mixBlendMode: "multiply" }}
