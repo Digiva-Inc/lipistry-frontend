@@ -21,11 +21,11 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem("login-theme") || "light";
-    setTheme(savedTheme);
-  }, []);
+  // useEffect(() => {
+  //   setMounted(true);
+  //   const savedTheme = localStorage.getItem("login-theme") || "light";
+  //   setTheme(savedTheme);
+  // }, []);
 
   useEffect(() => {
     if (mounted) {
@@ -362,13 +362,31 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div className="relative z-10 product-showcase shrink-0">
-              <img src="/box.png" alt="Box" className="lp-product w-[390px] -mr-[180px]" />
-              <img src="/lipstick.png" alt="Lipstick" className="lp-product w-[390px] -mx-[150px]" />
-              <img src="/foundation.png" alt="Foundation" className="lp-product w-[390px] -mx-[180px]" />
-              <img src="/compact.png" alt="Compact" className="lp-product w-[420px] -ml-[150px]" />
+            {/* <div className="relative z-10 product-showcase shrink-0">
+              <img src="/cap.png" alt="Box" className="lp-product w-[50px] -mr-[0px]" />
+              <img src="/1.png" alt="Lipstick" className="lp-product w-[30px] -ml-[11px]" />
+              <img src="/cap.png" alt="Box" className="lp-product w-[50px] -mr-[5px]" />
+              <img src="/2.png" alt="Lipstick" className="lp-product w-[30px] -ml-[6px]" />
+              <img src="/cap.png" alt="Box" className="lp-product w-[50px] -mr-[11px]" />
+              <img src="/3.png" alt="Lipstick" className="lp-product w-[30px] -ml-[2px]" />
+            </div> */}
+{/* Product showcase: 3 lipstick + box groups, evenly spaced */}
+   <div className="relative z-10 mb-10 flex shrink-0 items-end justify-center gap-6">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="relative flex items-end">
+              <img
+                src="/cap.png"
+                alt="Lipistry MD box"
+                className="relative z-0 w-[50px]"
+              />
+              <img
+                src={`/${n}.png`}
+                alt="Lipistry MD lipstick"
+                className="relative z-10 -ml-[14px] w-[30px]"
+              />
             </div>
-
+          ))}
+        </div>
             <div className="lp-feature-card relative z-10 bg-white rounded-xl px-4 py-3 grid grid-cols-3 gap-3 shadow-sm border border-gray-100 shrink-0">
               <div className="flex gap-2 items-start">
                 <ShieldCheck size={18} className="shrink-0" />
