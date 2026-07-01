@@ -22,9 +22,9 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    // setMounted(true);
+    setMounted(true);
     const savedTheme = localStorage.getItem("login-theme") || "light";
-    // setTheme(savedTheme);
+    setTheme(savedTheme);
   }, []);
 
   useEffect(() => {
