@@ -109,11 +109,11 @@ export default function AllDoctors() {
     try {
       const [docsResponse, repsResponse] = await Promise.all([
         fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors`,
+          `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors`,
           { headers: { Authorization: `Bearer ${token}` } }
         ),
         fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/reps`,
+          `${process.env.NEXT_PUBLIC_API_URL}/admin/reps`,
           { headers: { Authorization: `Bearer ${token}` } }
         )
       ]);
@@ -220,7 +220,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors`,
         {
           method: "POST",
           headers: {
@@ -263,7 +263,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors/${selectedDoctor.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors/${selectedDoctor.id}`,
         {
           method: "PUT",
           headers: {
@@ -301,7 +301,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors/${selectedDoctor.id}/reassign`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors/${selectedDoctor.id}/reassign`,
         {
           method: "PUT",
           headers: {
@@ -340,7 +340,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors/${selectedDoctor.id}/card`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors/${selectedDoctor.id}/card`,
         {
           method: "POST",
           headers: {

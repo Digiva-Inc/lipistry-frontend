@@ -28,6 +28,9 @@ export const useAuthStore = create((set) => ({
     if (isBrowser) {
       localStorage.setItem('lipistry_token', token);
       localStorage.setItem('lipistry_user', JSON.stringify(user));
+      // Set cookies for middleware
+      document.cookie = `lipistry_token=${token}; path=/; max-age=86400; SameSite=Strict`;
+      document.cookie = `lipistry_role=${user.role}; path=/; max-age=86400; SameSite=Strict`;
     }
     set({ token, user, isAuthenticated: true, error: null });
   },
@@ -36,6 +39,9 @@ export const useAuthStore = create((set) => ({
     if (isBrowser) {
       localStorage.removeItem('lipistry_token');
       localStorage.removeItem('lipistry_user');
+      // Clear cookies for middleware
+      document.cookie = 'lipistry_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'lipistry_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     }
     set({ token: null, user: null, isAuthenticated: false, error: null });
   },

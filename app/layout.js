@@ -16,7 +16,7 @@ const inter = Inter({
 export const metadata = {
   title: "Lipistry | Sales Representative Portal",
   description:
-    "Secure practitioner account management and Shopify order routing for Lipistry field sales reps.",
+    "Secure practitioner account management and order routing for Lipistry field sales reps.",
 };
 
 export default function RootLayout({ children }) {

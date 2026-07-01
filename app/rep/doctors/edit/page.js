@@ -82,7 +82,7 @@ function EditDoctorContent() {
     async function loadDoctor() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -142,7 +142,7 @@ function EditDoctorContent() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${id}`,
         {
           method: "PUT",
           headers: {

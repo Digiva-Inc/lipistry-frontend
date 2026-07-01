@@ -34,10 +34,19 @@ export default function LoginPage() {
   }, [theme, mounted]);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (mounted && isAuthenticated && user) {
       router.push(user.role === "admin" ? "/admin" : "/rep/dashboard");
     }
-  }, [isAuthenticated, user, router]);
+  }, [mounted, isAuthenticated, user, router]);
+
+  // Prevent flash of login screen if we are already authenticated or still hydrating
+  if (!mounted || (isAuthenticated && user)) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-[#F9F6F4]">
+        <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
+      </div>
+    );
+  }
 
   const onSubmit = async (data) => {
     if (isLoading) return;
@@ -47,7 +56,7 @@ export default function LoginPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/login`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -91,7 +100,7 @@ export default function LoginPage() {
     setError(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/forgot-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
         { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }
       );
       const result = await response.json();

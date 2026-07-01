@@ -37,7 +37,7 @@ export default function RepAccount() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/change-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/change-password`,
         {
           method: "PUT",
           headers: {
@@ -135,7 +135,7 @@ export default function RepAccount() {
           <div className="p-4 bg-brand-burgundy-light/35 border border-brand-burgundy/10 rounded-xl flex gap-3">
             <Sparkles className="w-5 h-5 text-brand-burgundy shrink-0 animate-pulse" />
             <p className="text-[10px] text-brand-burgundy font-bold leading-relaxed">
-              Wholesale catalog updates sync automatically from Shopify admin control. Stripe transaction accounts are isolated per registered doctor profile.
+              Wholesale catalog updates sync automatically. Stripe transaction accounts are isolated per registered doctor profile.
             </p>
           </div>
         </div>

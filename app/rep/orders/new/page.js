@@ -26,7 +26,7 @@ export default function SelectDoctorStep() {
     async function loadDoctors() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }

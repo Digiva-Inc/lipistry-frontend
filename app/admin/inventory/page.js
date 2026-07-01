@@ -9,7 +9,7 @@ import {
 import { useAuthStore } from "../../../store/authStore";
 import { toast } from "sonner";
 
-const API = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API = () => process.env.NEXT_PUBLIC_API_URL;
 
 export default function InventoryPage() {
   const { token } = useAuthStore();
@@ -134,7 +134,7 @@ export default function InventoryPage() {
   const outCount = products.filter(p => (p.stock_cases || 0) === 0).length;
   const lowCount = products.filter(p => (p.stock_cases || 0) > 0 && (p.stock_cases || 0) <= 10).length;
 
-  const fmt = (cents) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+  const fmt = (cents) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(cents / 100);
 
   const getStockBadge = (n) => {
     if (n === 0) return <span className="inline-flex items-center gap-1 text-[10px] font-black text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full"><AlertTriangle className="w-3 h-3" />OUT OF STOCK</span>;

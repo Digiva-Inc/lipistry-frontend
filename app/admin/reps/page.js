@@ -47,7 +47,7 @@ export default function ManageReps() {
   async function fetchReps() {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/reps`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/reps`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -103,7 +103,7 @@ export default function ManageReps() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/reps`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/reps`,
         {
           method: "POST",
           headers: {
@@ -137,7 +137,7 @@ export default function ManageReps() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/reps/${selectedRep.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/reps/${selectedRep.id}`,
         {
           method: "PUT",
           headers: {
@@ -175,7 +175,7 @@ export default function ManageReps() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/reps/${selectedRep.id}/reset-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/reps/${selectedRep.id}/reset-password`,
         {
           method: "POST",
           headers: {
@@ -298,7 +298,7 @@ export default function ManageReps() {
                     <td className="px-6 py-4 text-center font-extrabold text-slate-800">{rep.doctor_count}</td>
                     <td className="px-6 py-4 text-center font-extrabold text-slate-800">{rep.order_count}</td>
                     <td className="px-6 py-4 text-slate-600 font-semibold">
-                      {new Date(rep.created_at).toLocaleDateString("en-US", {
+                      {new Date(rep.created_at).toLocaleDateString("en-IN", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",

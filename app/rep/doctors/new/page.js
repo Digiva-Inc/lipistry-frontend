@@ -118,7 +118,7 @@ export default function NewDoctor() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors`,
         {
           method: "POST",
           headers: {
@@ -158,7 +158,7 @@ export default function NewDoctor() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${createdDoctorId}/card`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${createdDoctorId}/card`,
         {
           method: "POST",
           headers: {

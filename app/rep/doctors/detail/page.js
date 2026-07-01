@@ -18,7 +18,8 @@ import {
   Eye,
   Plus,
   X,
-  Lock
+  Lock,
+  RefreshCw
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -53,7 +54,7 @@ function DoctorDetailContent() {
   async function loadDoctorData() {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -98,7 +99,7 @@ function DoctorDetailContent() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${id}/card`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${id}/card`,
         {
           method: "POST",
           headers: {
@@ -137,7 +138,7 @@ function DoctorDetailContent() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/orders/${order.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${order.id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -157,10 +158,34 @@ function DoctorDetailContent() {
     }
   };
 
+  const verifyPayment = async (orderId) => {
+    const toastId = toast.loading("Verifying payment with Stripe...");
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${orderId}/verify-payment`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to verify payment");
+      
+      const result = await response.json();
+      if (result.message === 'Order successfully verified and updated.') {
+        toast.success("Payment verified successfully!", { id: toastId });
+        loadDoctorData(); // Reload doctor details to update the order list
+      } else {
+        toast.info("Payment has not been completed yet.", { id: toastId });
+      }
+    } catch (err) {
+      toast.error("Could not verify payment.", { id: toastId });
+    }
+  };
+
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(cents / 100);
   };
 
@@ -182,7 +207,12 @@ function DoctorDetailContent() {
   };
 
   const formatStatus = (status) => {
-    return status.replace(/_/g, ' ').toUpperCase();
+    if (status === 'return_approved') return 'RETURN APPROVED';
+    if (status === 'returned') return 'RETURNED TO WAREHOUSE';
+    if (status === 'refunded') return 'AMOUNT REFUNDED';
+    if (status === 'submitted_warehouse') return 'PAYMENT SUCCESSFUL';
+    if (status === 'pending_payment') return 'AWAITING PAYMENT';
+    return status ? status.replace(/_/g, ' ').toUpperCase() : "";
   };
 
   if (loading) {
@@ -276,47 +306,7 @@ function DoctorDetailContent() {
             <p className="text-xs font-bold text-slate-700">{doctor.city}, {doctor.state} {doctor.zip}</p>
           </div>
 
-          {/* Card on File */}
-          <div className="glass-panel p-5 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-4">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
-              <CreditCard className="w-4 h-4" />
-              <span>Credit Card on File</span>
-            </h3>
 
-            {cardInfo ? (
-              <div className="space-y-3">
-                <div className="p-3 bg-slate-50 border border-[#ebdfe1] rounded-xl flex items-center gap-3">
-                  <div className="w-10 h-6 bg-slate-200 rounded flex items-center justify-center font-bold text-[10px] text-slate-600">
-                    CARD
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-800">{cardInfo.brand} ending in {cardInfo.last4}</div>
-                    <div className="text-[10px] text-slate-505 font-semibold">Expires {cardInfo.expiry}</div>
-                  </div>
-                </div>
-                
-                <button
-                  onClick={() => setCardModalOpen(true)}
-                  className="text-xs font-bold text-brand-burgundy hover:text-brand-burgundy-hover transition-colors inline-flex items-center gap-1 cursor-pointer"
-                >
-                  Update Card Details
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="p-4 rounded-xl border border-dashed border-[#ebdfe1] text-center text-xs text-slate-400 font-semibold">
-                  No payment method saved.
-                </div>
-                <button
-                  onClick={() => setCardModalOpen(true)}
-                  className="w-full inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-brand-burgundy-light text-brand-burgundy border border-brand-burgundy/10 text-xs font-bold rounded-xl hover:bg-brand-burgundy-light/80 transition-all cursor-pointer"
-                >
-                  <Plus className="w-4.5 h-4.5" />
-                  <span>Add Card on File</span>
-                </button>
-              </div>
-            )}
-          </div>
 
           {/* Internal Notes */}
           <div className="glass-panel p-5 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-3">
@@ -358,12 +348,23 @@ function DoctorDetailContent() {
                       <td className="px-4 py-3 font-bold text-slate-800">{o.order_number}</td>
                       <td className="px-4 py-3 font-extrabold text-slate-800">{formatPrice(o.total_cents)}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold border ${getStatusColor(o.status)}`}>
-                          {formatStatus(o.status)}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold border ${getStatusColor(o.status)}`}>
+                            {formatStatus(o.status)}
+                          </span>
+                          {o.status === "pending_payment" && (
+                            <button
+                              onClick={() => verifyPayment(o.id)}
+                              title="Verify Payment"
+                              className="p-1 rounded-full text-slate-400 hover:text-brand-burgundy hover:bg-brand-burgundy-light transition-colors cursor-pointer"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-slate-550 font-semibold">
-                        {new Date(o.created_at).toLocaleDateString("en-US", {
+                        {new Date(o.created_at).toLocaleDateString("en-IN", {
                           month: "short",
                           day: "numeric",
                           year: "numeric"
@@ -387,107 +388,7 @@ function DoctorDetailContent() {
         </div>
       </div>
 
-      {/* Credit Card Modal */}
-      {cardModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="glass-card rounded-2xl border border-[#ebdfe1] p-6 w-full max-w-sm relative overflow-hidden shadow-2xl text-left">
-            <button
-              onClick={() => setCardModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
 
-            <div className="mb-4 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-brand-burgundy shrink-0" />
-              <h3 className="text-sm font-extrabold text-slate-900">Update Credit Card</h3>
-            </div>
-
-            <p className="text-slate-500 text-xs font-medium leading-relaxed mb-4">
-              Enter the card information to save on file. Raw credentials will route to Stripe securely.
-            </p>
-
-            <form onSubmit={handleCardSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-700 text-[10px] font-bold mb-1 uppercase tracking-wider">Card Brand</label>
-                  <select
-                    name="card_brand"
-                    value={cardData.card_brand}
-                    onChange={handleCardChange}
-                    className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input cursor-pointer"
-                  >
-                    <option value="Visa">Visa</option>
-                    <option value="Mastercard">Mastercard</option>
-                    <option value="Amex">American Express</option>
-                    <option value="Discover">Discover</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-700 text-[10px] font-bold mb-1 uppercase tracking-wider">Last 4 Digits</label>
-                  <input
-                    type="text"
-                    name="last4"
-                    required
-                    maxLength={4}
-                    value={cardData.last4}
-                    onChange={handleCardChange}
-                    placeholder="4242"
-                    className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-700 text-[10px] font-bold mb-1 uppercase tracking-wider">Expiry Month</label>
-                  <select
-                    name="exp_month"
-                    value={cardData.exp_month}
-                    onChange={handleCardChange}
-                    className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input cursor-pointer"
-                  >
-                    {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((m) => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-700 text-[10px] font-bold mb-1 uppercase tracking-wider">Expiry Year</label>
-                  <select
-                    name="exp_year"
-                    value={cardData.exp_year}
-                    onChange={handleCardChange}
-                    className="w-full px-3 py-2 rounded-xl text-xs font-semibold glass-input cursor-pointer"
-                  >
-                    {Array.from({ length: 10 }, (_, i) => String(new Date().getFullYear() + i)).map((y) => (
-                      <option key={y} value={y}>{y}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-[#ebdfe1] flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCardModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 border border-slate-200 transition-all cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={cardLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {cardLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>Save Card</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Order Details Modal */}
       {orderModalOpen && (
@@ -520,9 +421,6 @@ function DoctorDetailContent() {
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold border inline-block ${getStatusColor(orderDetail.order.status)}`}>
                       {formatStatus(orderDetail.order.status)}
                     </span>
-                    {orderDetail.order.shopify_order_number && (
-                      <div className="text-[9px] font-mono text-slate-505 mt-2 font-semibold">Shopify Ref: {orderDetail.order.shopify_order_number}</div>
-                    )}
                   </div>
 
                   {/* Doctor Info */}

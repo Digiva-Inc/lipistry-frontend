@@ -30,7 +30,7 @@ export default function MyDoctors() {
       if (search) queryParams.append("search", search);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors?${queryParams.toString()}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors?${queryParams.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -134,7 +134,7 @@ export default function MyDoctors() {
                           <div className="flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>
-                              {new Date(doc.last_order_date).toLocaleDateString("en-US", {
+                              {new Date(doc.last_order_date).toLocaleDateString("en-IN", {
                                 month: "short",
                                 day: "numeric",
                                 year: "numeric",

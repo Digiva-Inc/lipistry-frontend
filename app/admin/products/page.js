@@ -40,8 +40,6 @@ export default function ManageProducts() {
     case_price: "", // In dollars, e.g. "144.00"
     units_per_case: "",
     description: "",
-    shopify_product_id: "",
-    shopify_variant_id: "",
     active: 1
   });
 
@@ -51,14 +49,14 @@ export default function ManageProducts() {
   const getImageUrl = (path) => {
     if (!path) return null;
     if (path.startsWith("http://") || path.startsWith("https://")) return path;
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
     return `${baseUrl}${path}`;
   };
 
   async function fetchProducts() {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -91,8 +89,6 @@ export default function ManageProducts() {
       case_price: "",
       units_per_case: "",
       description: "",
-      shopify_product_id: "",
-      shopify_variant_id: "",
       active: 1
     });
     setUploadedImages([]);
@@ -112,8 +108,6 @@ export default function ManageProducts() {
       case_price: (prod.case_price / 100).toFixed(2), // Convert cents to dollars string
       units_per_case: prod.units_per_case.toString(),
       description: prod.description || "",
-      shopify_product_id: prod.shopify_product_id || "",
-      shopify_variant_id: prod.shopify_variant_id || "",
       active: prod.active
     });
     
@@ -144,7 +138,7 @@ export default function ManageProducts() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products/upload`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products/upload`,
         {
           method: "POST",
           headers: {
@@ -185,7 +179,7 @@ export default function ManageProducts() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products`,
         {
           method: "POST",
           headers: {
@@ -231,7 +225,7 @@ export default function ManageProducts() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products/${selectedProduct.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products/${selectedProduct.id}`,
         {
           method: "PUT",
           headers: {
@@ -276,9 +270,9 @@ export default function ManageProducts() {
   );
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(cents / 100);
   };
 

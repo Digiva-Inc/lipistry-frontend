@@ -64,7 +64,7 @@ body {
 .stripe-element-container {
   background: #ffffff;
   border: 1px solid #d4c2c5;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 12px;
   transition: all 0.2s ease-in-out;
 }

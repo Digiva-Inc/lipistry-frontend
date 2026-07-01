@@ -32,7 +32,7 @@ function BuildOrderContent() {
       try {
         // 1. Fetch Doctor
         const docRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${doctorId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${doctorId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!docRes.ok) throw new Error("Doctor not found.");
@@ -41,7 +41,7 @@ function BuildOrderContent() {
 
         // 2. Fetch Products
         const prodRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/products`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/products`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!prodRes.ok) throw new Error("Failed to load products catalog.");
@@ -111,9 +111,9 @@ function BuildOrderContent() {
   const subtotal = cartItems.reduce((acc, curr) => acc + curr.total, 0);
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD"
+      currency: "INR"
     }).format(cents / 100);
   };
 
@@ -185,7 +185,7 @@ function BuildOrderContent() {
                           }
                         } catch (e) {}
                       }
-                      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                      const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                       const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
 
                       return imgUrl ? (
