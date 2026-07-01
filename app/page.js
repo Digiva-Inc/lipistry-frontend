@@ -21,11 +21,11 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  // useEffect(() => {
-  //   setMounted(true);
-  //   const savedTheme = localStorage.getItem("login-theme") || "light";
-  //   setTheme(savedTheme);
-  // }, []);
+  useEffect(() => {
+    // setMounted(true);
+    const savedTheme = localStorage.getItem("login-theme") || "light";
+    // setTheme(savedTheme);
+  }, []);
 
   useEffect(() => {
     if (mounted) {
@@ -169,7 +169,7 @@ export default function LoginPage() {
         }
 
         .lp-page.dark .lp-left {
-          background: #261f2d;
+          background: #000000;
         }
 
         .lp-right {
@@ -178,7 +178,7 @@ export default function LoginPage() {
         }
 
         .lp-page.dark .lp-right {
-          background: #211b28;
+          background: #000000;
         }
 
         .lp-page.dark .lp-title,
@@ -391,24 +391,24 @@ export default function LoginPage() {
               <div className="flex gap-2 items-start">
                 <ShieldCheck size={18} className="shrink-0" />
                 <div>
-                  <p className="text-[9px] font-bold text-black">Secure & Reliable</p>
-                  <p className="text-[8px] text-gray-500 mt-1 leading-3">Your data is safe with us.</p>
+                  <p className="text-[10px] font-bold text-black">Secure & Reliable</p>
+                  <p className="text-[9px] text-gray-800 mt-1 leading-3">Your data is safe with us.</p>
                 </div>
               </div>
 
               <div className="flex gap-2 items-start border-x border-gray-200 px-3">
                 <BarChart3 size={18} className="shrink-0" />
                 <div>
-                  <p className="text-[9px] font-bold text-black">Real-time Insights</p>
-                  <p className="text-[8px] text-gray-500 mt-1 leading-3">Track performance in real-time.</p>
+                  <p className="text-[10px] font-bold text-black">Real-time Insights</p>
+                  <p className="text-[9px] text-gray-800 mt-1 leading-3">Track performance in real-time.</p>
                 </div>
               </div>
 
               <div className="flex gap-2 items-start">
                 <Users size={18} className="shrink-0" />
                 <div>
-                  <p className="text-[9px] font-bold text-black">Business Growth</p>
-                  <p className="text-[8px] text-gray-500 mt-1 leading-3">Tools to help you achieve more.</p>
+                  <p className="text-[10px] font-bold text-black">Business Growth</p>
+                  <p className="text-[9px] text-gray-800 mt-1 leading-3">Tools to help you achieve more.</p>
                 </div>
               </div>
             </div>

@@ -64,7 +64,7 @@ export default function RepDashboard() {
 
   useEffect(() => {
     if (token) {
-      loadDashboardData();
+      // loadDashboardData();
     }
   }, [token]);
 
