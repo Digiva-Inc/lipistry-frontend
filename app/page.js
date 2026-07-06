@@ -21,11 +21,11 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem("login-theme") || "light";
-    setTheme(savedTheme);
-  }, []);
+  // useEffect(() => {
+  //   setMounted(true);
+  //   const savedTheme = localStorage.getItem("login-theme") || "light";
+  //   setTheme(savedTheme);
+  // }, []);
 
   useEffect(() => {
     if (mounted) {
@@ -34,19 +34,10 @@ export default function LoginPage() {
   }, [theme, mounted]);
 
   useEffect(() => {
-    if (mounted && isAuthenticated && user) {
+    if (isAuthenticated && user) {
       router.push(user.role === "admin" ? "/admin" : "/rep/dashboard");
     }
-  }, [mounted, isAuthenticated, user, router]);
-
-  // Prevent flash of login screen if we are already authenticated or still hydrating
-  if (!mounted || (isAuthenticated && user)) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#F9F6F4]">
-        <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
-      </div>
-    );
-  }
+  }, [isAuthenticated, user, router]);
 
   const onSubmit = async (data) => {
     if (isLoading) return;
@@ -56,7 +47,7 @@ export default function LoginPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -100,7 +91,7 @@ export default function LoginPage() {
     setError(null);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/forgot-password`,
         { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }
       );
       const result = await response.json();
@@ -178,7 +169,7 @@ export default function LoginPage() {
         }
 
         .lp-page.dark .lp-left {
-          background: #000000;
+          background: #261f2d;
         }
 
         .lp-right {
@@ -187,7 +178,7 @@ export default function LoginPage() {
         }
 
         .lp-page.dark .lp-right {
-          background: #000000;
+          background: #211b28;
         }
 
         .lp-page.dark .lp-title,
@@ -400,24 +391,24 @@ export default function LoginPage() {
               <div className="flex gap-2 items-start">
                 <ShieldCheck size={18} className="shrink-0" />
                 <div>
-                  <p className="text-[10px] font-bold text-black">Secure & Reliable</p>
-                  <p className="text-[9px] text-gray-800 mt-1 leading-3">Your data is safe with us.</p>
+                  <p className="text-[9px] font-bold text-black">Secure & Reliable</p>
+                  <p className="text-[8px] text-gray-500 mt-1 leading-3">Your data is safe with us.</p>
                 </div>
               </div>
 
               <div className="flex gap-2 items-start border-x border-gray-200 px-3">
                 <BarChart3 size={18} className="shrink-0" />
                 <div>
-                  <p className="text-[10px] font-bold text-black">Real-time Insights</p>
-                  <p className="text-[9px] text-gray-800 mt-1 leading-3">Track performance in real-time.</p>
+                  <p className="text-[9px] font-bold text-black">Real-time Insights</p>
+                  <p className="text-[8px] text-gray-500 mt-1 leading-3">Track performance in real-time.</p>
                 </div>
               </div>
 
               <div className="flex gap-2 items-start">
                 <Users size={18} className="shrink-0" />
                 <div>
-                  <p className="text-[10px] font-bold text-black">Business Growth</p>
-                  <p className="text-[9px] text-gray-800 mt-1 leading-3">Tools to help you achieve more.</p>
+                  <p className="text-[9px] font-bold text-black">Business Growth</p>
+                  <p className="text-[8px] text-gray-500 mt-1 leading-3">Tools to help you achieve more.</p>
                 </div>
               </div>
             </div>
@@ -425,14 +416,14 @@ export default function LoginPage() {
 
           {/* RIGHT SIDE */}
           <div className="lp-right relative flex items-center justify-center px-7 py-6 overflow-hidden">
-            <button
+            {/* <button
               type="button"
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
               className="lp-theme-btn absolute right-7 top-7 flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-[10px] font-semibold text-gray-700"
             >
               {theme === "light" ? <Sun size={13} /> : <Moon size={13} />}
               {theme === "light" ? "Light Mode" : "Dark Mode"}
-            </button>
+            </button> */}
 
             <div className="w-full max-w-[360px] pt-3">
               <div className="text-center mb-6">
