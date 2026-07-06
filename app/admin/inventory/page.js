@@ -220,7 +220,7 @@ export default function InventoryPage() {
               <Filter className="w-4 h-4 text-slate-400" />
               {[["all","All"], ["low","Low Stock"], ["out","Out of Stock"]].map(([val, lbl]) => (
                 <button key={val} onClick={() => setStockFilter(val)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${stockFilter === val ? "bg-brand-burgundy text-white border-brand-burgundy" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${stockFilter === val ? "bg-black text-white border-black" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
                   {lbl}
                 </button>
               ))}
@@ -397,11 +397,18 @@ export default function InventoryPage() {
               <div className="flex justify-end gap-3 pt-1">
                 <button type="button" onClick={() => setAdjustOpen(false)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" disabled={saving}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-60">
-                  {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                  Save Adjustment
-                </button>
+               <button
+  type="submit"
+  disabled={saving}
+  className="flex items-center gap-1.5 px-5 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-60"
+>
+  {saving ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <CheckCircle2 className="w-3.5 h-3.5" />
+  )}
+  Save Adjustment
+</button>
               </div>
             </form>
 

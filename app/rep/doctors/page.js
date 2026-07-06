@@ -65,12 +65,12 @@ export default function MyDoctors() {
           <p className="text-slate-500 text-xs mt-1 font-semibold">Manage registered medical accounts, save payment details, and launch wholesale order placement.</p>
         </div>
         <Link
-          href="/rep/doctors/new"
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Doctor</span>
-        </Link>
+  href="/rep/doctors/new"
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
+>
+  <Plus className="w-4 h-4" />
+  <span>Add New Doctor</span>
+</Link>
       </div>
 
       {/* Search Bar */}

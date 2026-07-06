@@ -495,7 +495,7 @@ export default function AllOrders() {
           onClick={handleExportCSV}
           className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 active:scale-[0.98] text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
         >
-          <Download className="w-4 h-4 text-brand-burgundy" />
+          <Download className="w-4 h-4 text-black" />
           <span>Export to CSV</span>
         </button>
       </div>
@@ -503,7 +503,7 @@ export default function AllOrders() {
       {/* Advanced Filter Panel */}
       <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4 shadow-sm">
         <div className="flex items-center gap-2 text-slate-750 font-bold text-xs">
-          <Filter className="w-4.5 h-4.5 text-brand-burgundy" />
+          <Filter className="w-4.5 h-4.5 text-black" />
           <span>Filter Order History</span>
         </div>
 
@@ -654,7 +654,7 @@ export default function AllOrders() {
                           onClick={() => handleOpenDetails(o)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
                         >
-                          <Eye className="w-3.5 h-3.5 text-brand-burgundy" />
+                          <Eye className="w-3.5 h-3.5 text-black" />
                           <span>View</span>
                         </button>
                       </td>
@@ -965,13 +965,13 @@ export default function AllOrders() {
                       )}
 
                       <div className="flex justify-end pt-1">
-                        <button
-                          type="submit"
-                          disabled={updatingStatus}
-                          className="px-4 py-2 bg-brand-burgundy text-white hover:bg-brand-burgundy-dark rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
-                        >
-                          {updatingStatus ? "Updating..." : "Update Status"}
-                        </button>
+                       <button
+  type="submit"
+  disabled={updatingStatus}
+  className="px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
+>
+  {updatingStatus ? "Updating..." : "Update Status"}
+</button>
                       </div>
                     </form>
                   )}

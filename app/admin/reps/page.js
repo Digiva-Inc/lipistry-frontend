@@ -229,12 +229,12 @@ export default function ManageReps() {
           <p className="text-slate-500 text-xs mt-1 font-semibold">Register new reps, modify accounts, and deactivate active listings.</p>
         </div>
         <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Add New Rep</span>
-        </button>
+  onClick={handleOpenAdd}
+  className="flex items-center gap-2 px-4 py-2.5 bg-black hover:bg-neutral-800 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  <UserPlus className="w-4 h-4" />
+  <span>Add New Rep</span>
+</button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -248,8 +248,8 @@ export default function ManageReps() {
             placeholder="Search by name, email, or rep ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-semibold glass-input shadow-sm"
-          />
+        className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-semibold glass-input"
+        />
         </div>
       </div>
 
@@ -309,14 +309,14 @@ export default function ManageReps() {
                         onClick={() => handleOpenEdit(rep)}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
                       >
-                        <Edit className="w-3.5 h-3.5 text-brand-burgundy" />
+                        <Edit className="w-3.5 h-3.5 text-slate-800" />
                         <span>Edit</span>
                       </button>
                       <button
                         onClick={() => handleOpenReset(rep)}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
                       >
-                        <Key className="w-3.5 h-3.5 text-brand-burgundy" />
+                        <Key className="w-3.5 h-3.5 text-slate-800" />
                         <span>Reset PW</span>
                       </button>
                     </td>
@@ -438,14 +438,17 @@ export default function ManageReps() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>Create Rep</span>
-                </button>
+              <button
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-4 py-2 bg-black hover:bg-neutral-800 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {submitLoading ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : null}
+
+  <span>Create Rep</span>
+</button>
               </div>
             </form>
           </div>
@@ -555,14 +558,14 @@ export default function ManageReps() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>Save Changes</span>
-                </button>
+               <button
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-4 py-2 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+  <span>Save Changes</span>
+</button>
               </div>
             </form>
           </div>
@@ -609,14 +612,14 @@ export default function ManageReps() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>Reset Password</span>
-                </button>
+             <button
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-4 py-2 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+  <span>Reset Password</span>
+</button>
               </div>
             </form>
           </div>

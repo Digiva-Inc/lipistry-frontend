@@ -362,9 +362,9 @@ export default function WarehousePanel() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${
-                activeTab === tab.id
-                  ? "bg-brand-burgundy text-white shadow-md"
-                  : "text-slate-500 hover:text-slate-805 hover:bg-slate-100"
+               activeTab === tab.id
+  ? "bg-black text-white shadow-md"
+  : "text-slate-500 hover:text-slate-805 hover:bg-slate-100"
               }`}
             >
               <span>{tab.name}</span>
@@ -449,19 +449,19 @@ export default function WarehousePanel() {
                         {/* Quick flow action button */}
                         {order.status === "submitted_warehouse" && (
                           <button
-                            onClick={() => handleConfirmOrder(order.id)}
-                            className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                          >
-                            Confirm Order
-                          </button>
+  onClick={() => handleConfirmOrder(order.id)}
+  className="px-2.5 py-1.5 bg-black hover:bg-neutral-800 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+>
+  Confirm Order
+</button>
                         )}
                         {order.status === "confirmed" && (
-                          <button
-                            onClick={() => handleOpenShipDialog(order)}
-                            className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                          >
-                            Ship Order
-                          </button>
+                        <button
+  onClick={() => handleOpenShipDialog(order)}
+  className="px-2.5 py-1.5 bg-black hover:bg-gray-800 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+>
+  Ship Order
+</button>
                         )}
                         {order.status === "shipped" && (
                           <button
@@ -790,13 +790,17 @@ export default function WarehousePanel() {
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  disabled={shipLoading}
-                  className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {shipLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                  <span>Confirm Dispatch</span>
-                </button>
+  type="submit"
+  disabled={shipLoading}
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {shipLoading ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <CheckCircle2 className="w-3.5 h-3.5" />
+  )}
+  <span>Confirm Dispatch</span>
+</button>
               </div>
             </form>
           </div>

@@ -194,20 +194,20 @@ export default function RepAccount() {
           </div>
 
           <div className="pt-3 border-t border-[#ebdfe1] flex justify-end">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Updating...</span>
-                </>
-              ) : (
-                <span>Update Password</span>
-              )}
-            </button>
+          <button
+  type="submit"
+  disabled={loading}
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
+>
+  {loading ? (
+    <>
+      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+      <span>Updating...</span>
+    </>
+  ) : (
+    <span>Update Password</span>
+  )}
+</button>
           </div>
         </form>
       </div>

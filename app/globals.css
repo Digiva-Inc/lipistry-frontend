@@ -48,16 +48,23 @@ body {
 
 .glass-input {
   background: #ffffff;
-  border: 1px solid #d4c2c5;
   color: #3f3335;
-  transition: all 0.2s ease-in-out;
+  border: 1px solid #000000;
+  transition: border-color 0.2s ease-in-out;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.glass-input:focus {
+.glass-input:focus,
+.glass-input:focus-visible,
+.glass-input:active {
   background: #ffffff;
-  border-color: #700c1a;
-  box-shadow: 0 0 0 3px rgba(112, 12, 26, 0.12);
-  outline: none;
+  color: #3f3335;
+  border: 1px solid #000000 !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Stripe elements custom inputs container */
