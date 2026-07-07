@@ -194,9 +194,9 @@ export default function AdminLayout({ children }) {
         </header>
 
         {/* Content Children - solid white background */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-8 py-6 bg-[#fbfaf9]">
-          {children}
-        </main>
+       <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 bg-[#fbfaf9]">
+  {children}
+</main>
       </div>
     </div>
   );
