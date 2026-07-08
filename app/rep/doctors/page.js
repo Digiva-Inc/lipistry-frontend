@@ -118,7 +118,7 @@ export default function MyDoctors() {
                     <tr key={doc.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4 font-bold text-slate-900">
                         <div className="flex items-center gap-2">
-                          <Building2 className="w-4.5 h-4.5 text-brand-burgundy shrink-0" />
+                          <Building2 className="w-4.5 h-4.5 text-black shrink-0" />
                           <span>{doc.practice_name}</span>
                         </div>
                       </td>
