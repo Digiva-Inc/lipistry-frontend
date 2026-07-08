@@ -153,12 +153,12 @@ export default function RepOrders() {
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Wholesale Orders History</h1>
           <p className="text-slate-500 text-xs mt-1 font-semibold font-sans">Track order status, inspect line items, and audit billing metrics for your territory.</p>
         </div>
-        <Link
-          href="/rep/orders/new"
-          className="px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
-        >
-          Place New Order
-        </Link>
+       <Link
+  href="/rep/orders/new"
+  className="px-4 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
+>
+  Place New Order
+</Link>
       </div>
 
       {/* Filter and Search Bar */}

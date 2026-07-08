@@ -251,9 +251,9 @@ function DoctorDetailContent() {
       <div className="glass-panel p-6 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm flex flex-col md:flex-row justify-between items-start gap-4">
         <div className="space-y-4">
           <div>
-            <span className="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold border bg-brand-burgundy-light text-brand-burgundy border-brand-burgundy/10 uppercase tracking-wider">
-              Practice Account
-            </span>
+           <span className="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold border bg-brand-burgundy-light text-black border-brand-burgundy/10 uppercase tracking-wider">
+  Practice Account
+</span>
             <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-2">{doctor.practice_name}</h1>
             <p className="text-slate-700 font-bold text-xs mt-0.5">Dr. {doctor.doctor_first_name} {doctor.doctor_last_name}</p>
           </div>
@@ -282,13 +282,13 @@ function DoctorDetailContent() {
             <Edit className="w-3.5 h-3.5" />
             <span>Edit Profile</span>
           </Link>
-          <Link
-            href={`/rep/orders/new/build?doctorId=${doctor.id}`}
-            className="flex-1 md:flex-initial inline-flex justify-center items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
-          >
-            <ShoppingCart className="w-3.5 h-3.5" />
-            <span>Place Order</span>
-          </Link>
+        <Link
+  href={`/rep/orders/new/build?doctorId=${doctor.id}`}
+  className="flex-1 md:flex-initial inline-flex justify-center items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
+>
+  <ShoppingCart className="w-3.5 h-3.5" />
+  <span>Place Order</span>
+</Link>
         </div>
       </div>
 
@@ -297,8 +297,8 @@ function DoctorDetailContent() {
         <div className="md:col-span-1 space-y-6">
           {/* Shipping Coordinates */}
           <div className="glass-panel p-5 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-3">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" />
+           <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+              <MapPin className="w-4 h-4 text-black" />
               <span>Clinic Location</span>
             </h3>
             <p className="text-xs font-bold text-slate-700">{doctor.address_line1}</p>
@@ -310,7 +310,7 @@ function DoctorDetailContent() {
 
           {/* Internal Notes */}
           <div className="glass-panel p-5 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-3">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+           <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
               <span>Internal Comments</span>
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed font-semibold">
@@ -322,7 +322,7 @@ function DoctorDetailContent() {
         {/* Right Column: Order History list */}
         <div className="md:col-span-2 glass-panel p-5 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-4 flex flex-col min-h-[350px]">
           <div className="flex items-center gap-2 border-b border-[#ebdfe1]/50 pb-2.5 shrink-0">
-            <ShoppingCart className="w-4.5 h-4.5 text-brand-burgundy" />
+            <ShoppingCart className="w-4.5 h-4.5 text-black" />
             <h3 className="text-xs font-black uppercase tracking-wider text-slate-800">Practice Order History</h3>
           </div>
 

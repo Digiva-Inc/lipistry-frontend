@@ -149,10 +149,10 @@ export default function RepAccount() {
         </div>
 
         <form onSubmit={handleUpdatePassword} className="glass-panel p-6 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
-            <Lock className="w-4 h-4" />
-            <span>Update Password</span>
-          </h3>
+         <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+  <Lock className="w-4 h-4 text-black" />
+  <span>Update Password</span>
+</h3>
 
           <div>
             <label className="block text-slate-705 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Current Password</label>
