@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { 
-  Loader2, 
-  Stethoscope, 
-  ArrowLeft, 
-  Save, 
-  CreditCard, 
+import {
+  Loader2,
+  Stethoscope,
+  ArrowLeft,
+  Save,
+  CreditCard,
   CheckCircle,
   Building,
   User,
@@ -210,14 +210,14 @@ export default function NewDoctor() {
       <form onSubmit={handleSubmit} className="glass-panel p-6 rounded-2xl border border-[#ebdfe1] bg-white space-y-6 shadow-sm text-left">
         {/* Practice info */}
         <div className="space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
             <Building className="w-4 h-4" />
             <span>Practice Details</span>
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Practice Name *</label>
+              <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">Practice Name *</label>
               <input
                 type="text"
                 name="practice_name"
@@ -228,10 +228,12 @@ export default function NewDoctor() {
                 className="w-full px-4 py-2.5 rounded-xl text-xs font-semibold glass-input"
               />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">First Name *</label>
+                <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">
+                  First Name *
+                </label>
                 <input
                   type="text"
                   name="doctor_first_name"
@@ -243,7 +245,7 @@ export default function NewDoctor() {
                 />
               </div>
               <div>
-                <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Last Name *</label>
+                <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">Last Name *</label>
                 <input
                   type="text"
                   name="doctor_last_name"
@@ -260,14 +262,14 @@ export default function NewDoctor() {
 
         {/* Address */}
         <div className="space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
             <MapPin className="w-4 h-4" />
             <span>Office Address</span>
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Address Line 1 *</label>
+              <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">Address Line 1 *</label>
               <input
                 type="text"
                 name="address_line1"
@@ -279,7 +281,7 @@ export default function NewDoctor() {
               />
             </div>
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Address Line 2 (Optional)</label>
+              <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">Address Line 2 (Optional)</label>
               <input
                 type="text"
                 name="address_line2"
@@ -293,7 +295,7 @@ export default function NewDoctor() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">City *</label>
+              <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">City *</label>
               <input
                 type="text"
                 name="city"
@@ -305,13 +307,13 @@ export default function NewDoctor() {
               />
             </div>
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">State *</label>
+              <label className="block text-black text-xs  mb-1.5 font-bold uppercase tracking-wider">State *</label>
               <select
                 name="state"
                 required
                 value={formData.state}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl text-xs font-semibold glass-input cursor-pointer"
+                className="w-full px-4 py-2.5 rounded-xl text-xs font-xs glass-input cursor-pointer"
               >
                 <option value="">Select State</option>
                 {INDIA_STATES.map((st) => (
@@ -320,7 +322,7 @@ export default function NewDoctor() {
               </select>
             </div>
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">ZIP / PIN Code *</label>
+              <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">ZIP / PIN Code *</label>
               <input
                 type="text"
                 name="zip"
@@ -337,14 +339,14 @@ export default function NewDoctor() {
 
         {/* Contacts */}
         <div className="space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
             <Mail className="w-4 h-4" />
             <span>Contact Information</span>
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Practice Phone *</label>
+              <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">Practice Phone *</label>
               <input
                 type="tel"
                 name="phone"
@@ -356,7 +358,7 @@ export default function NewDoctor() {
               />
             </div>
             <div>
-              <label className="block text-slate-700 text-xs font-bold mb-1.5 uppercase tracking-wider">Practice Email *</label>
+              <label className="block text-black text-xs font-bold mb-1.5 uppercase tracking-wider">Practice Email *</label>
               <input
                 type="email"
                 name="email"
@@ -372,7 +374,7 @@ export default function NewDoctor() {
 
         {/* Notes */}
         <div className="space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
             <AlertCircle className="w-4 h-4" />
             <span>Internal Notes (Optional)</span>
           </h3>
@@ -388,18 +390,18 @@ export default function NewDoctor() {
 
         {/* Action Button */}
         <div className="pt-3 border-t border-[#ebdfe1] flex justify-end">
-         <button
-  type="submit"
-  disabled={loading}
-  className="flex items-center gap-1.5 px-5 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
->
-  {loading ? (
-    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-  ) : (
-    <Save className="w-3.5 h-3.5" />
-  )}
-  <span>Save Profile</span>
-</button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-1.5 px-5 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+          >
+            {loading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
+            )}
+            <span>Save Profile</span>
+          </button>
         </div>
       </form>
 
