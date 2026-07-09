@@ -454,7 +454,7 @@ export default function AllDoctors() {
                       <td className="px-6 py-4">
                         <div className="font-extrabold text-slate-900">Dr. {doc.doctor_first_name} {doc.doctor_last_name}</div>
                         <div className="text-[10px] text-slate-500 mt-0.5 font-bold flex items-center gap-1">
-                          <Building2 className="w-3 h-3 text-brand-burgundy shrink-0" />
+                          <Building2 className="w-3 h-3 text-black shrink-0" />
                           <span>{doc.practice_name}</span>
                         </div>
                         {!doc.active && (
@@ -494,7 +494,7 @@ export default function AllDoctors() {
                       <td className="px-6 py-4">
                         {cardInfo ? (
                           <div className="flex items-center gap-1.5 text-slate-750 font-bold">
-                            <CreditCard className="w-4 h-4 text-brand-burgundy" />
+                            <CreditCard className="w-4 h-4 text-black" />
                             <span>{cardInfo.brand} •••• {cardInfo.last4}</span>
                           </div>
                         ) : (
@@ -504,7 +504,7 @@ export default function AllDoctors() {
                       <td className="px-6 py-4 text-right space-x-1.5 whitespace-nowrap">
                         <button
                           onClick={() => handleOpenEdit(doc)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
+                         className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-brand-burgundy bg-red-100 border border-red-200 font-bold transition-all cursor-pointer shadow-sm"
                         >
                           <Edit className="w-3.5 h-3.5 text-black" />
                           <span>Edit</span>
