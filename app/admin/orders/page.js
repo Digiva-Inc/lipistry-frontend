@@ -652,7 +652,7 @@ export default function AllOrders() {
                       <td className="px-6 py-4 text-right">
                         <button
                           onClick={() => handleOpenDetails(o)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-green-700 bg-green-100  border border-green-200 font-bold transition-all cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5 text-black" />
                           <span>View</span>
