@@ -8,7 +8,8 @@ import {
   Eye, 
   Calendar,
   Building2,
-  ListOrdered
+  ListOrdered,
+  RefreshCw
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -25,7 +26,7 @@ export default function RepOrders() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/orders`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/orders`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -45,6 +46,37 @@ export default function RepOrders() {
     }
   }
 
+  const verifyPayment = async (orderId) => {
+    const toastId = toast.loading("Verifying payment with Stripe...");
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${orderId}/verify-payment`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to verify payment");
+      }
+      
+      const result = await response.json();
+      if (result.message === 'Order successfully verified and updated.') {
+        toast.success("Payment verified successfully!", { id: toastId });
+        loadOrders();
+      } else {
+        toast.info("Payment has not been completed yet.", { id: toastId });
+      }
+    } catch (err) {
+      if (err.message === 'Missing session ID.') {
+        toast.error("Cannot verify older orders. Please test with a new order.", { id: toastId });
+      } else {
+        toast.error(err.message || "Could not verify payment.", { id: toastId });
+      }
+    }
+  };
+
   useEffect(() => {
     if (token) {
       loadOrders();
@@ -52,9 +84,9 @@ export default function RepOrders() {
   }, [token]);
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(cents / 100);
   };
 
@@ -95,6 +127,8 @@ export default function RepOrders() {
     if (status === 'return_approved') return 'RETURN APPROVED';
     if (status === 'returned') return 'RETURNED TO WAREHOUSE';
     if (status === 'refunded') return 'AMOUNT REFUNDED';
+    if (status === 'submitted_warehouse') return 'PAYMENT SUCCESSFUL';
+    if (status === 'pending_payment') return 'AWAITING PAYMENT';
     return status ? status.replace(/_/g, ' ').toUpperCase() : "";
   };
 
@@ -119,12 +153,12 @@ export default function RepOrders() {
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Wholesale Orders History</h1>
           <p className="text-slate-500 text-xs mt-1 font-semibold font-sans">Track order status, inspect line items, and audit billing metrics for your territory.</p>
         </div>
-        <Link
-          href="/rep/orders/new"
-          className="px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
-        >
-          Place New Order
-        </Link>
+       <Link
+  href="/rep/orders/new"
+  className="px-4 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
+>
+  Place New Order
+</Link>
       </div>
 
       {/* Filter and Search Bar */}
@@ -195,7 +229,7 @@ export default function RepOrders() {
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
                           <span>
-                            {new Date(o.created_at).toLocaleDateString("en-US", {
+                            {new Date(o.created_at).toLocaleDateString("en-IN", {
                               month: "short",
                               day: "numeric",
                               year: "numeric"
@@ -218,11 +252,30 @@ export default function RepOrders() {
                       </td>
                       <td className="px-6 py-4 font-extrabold text-slate-905">{formatPrice(o.total_cents)}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-extrabold border ${getStatusColor(o.status)}`}>
-                          {formatStatus(o.status)}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-extrabold border ${getStatusColor(o.status)}`}>
+                            {formatStatus(o.status)}
+                          </span>
+                          {o.status === "pending_payment" && (
+                            <button
+                              onClick={() => verifyPayment(o.id)}
+                              title="Verify Payment"
+                              className="p-1 rounded-full text-slate-400 hover:text-brand-burgundy hover:bg-brand-burgundy-light transition-colors cursor-pointer"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                        {(o.status === "pending_payment" || o.status === "failed_payment") && (
+                          <Link
+                            href={`/rep/orders/pay?id=${o.id}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-brand-burgundy text-white hover:bg-brand-burgundy-hover font-bold transition-all cursor-pointer shadow-sm"
+                          >
+                            <span>Pay Now</span>
+                          </Link>
+                        )}
                         <Link
                           href={`/rep/orders/detail?id=${o.id}`}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-205 text-slate-750 hover:bg-brand-burgundy-light hover:text-brand-burgundy font-bold transition-all cursor-pointer"

@@ -37,7 +37,7 @@ export default function RepAccount() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/change-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/change-password`,
         {
           method: "PUT",
           headers: {
@@ -85,11 +85,11 @@ export default function RepAccount() {
           {/* User Card */}
           <div className="flex items-center gap-4 border-b border-[#ebdfe1]/50 pb-5">
             <div className="w-12 h-12 rounded-full bg-brand-burgundy-light border border-brand-burgundy/10 flex items-center justify-center">
-              <User className="w-6 h-6 text-brand-burgundy" />
+              <User className="w-6 h-6 text-black" />
             </div>
             <div>
               <h3 className="text-sm font-black text-slate-900">{user.name}</h3>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold border bg-brand-burgundy-light text-brand-burgundy border-brand-burgundy/10 mt-1 uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold border bg-neutral-100 text-black border-neutral-200 mt-1 uppercase tracking-wider">
                 Sales Representative
               </span>
             </div>
@@ -110,7 +110,9 @@ export default function RepAccount() {
                 <Tag className="w-4.5 h-4.5 text-slate-400" />
                 <span>Rep Number</span>
               </div>
-              <span className="text-xs font-bold text-brand-burgundy font-mono">{user.rep_number || "N/A"}</span>
+              <span className="text-xs font-bold text-black font-mono">
+                {user.rep_number || "N/A"}
+              </span>
             </div>
 
             <div className="flex items-center justify-between py-1 border-b border-[#ebdfe1]/10">
@@ -133,9 +135,9 @@ export default function RepAccount() {
           </div>
 
           <div className="p-4 bg-brand-burgundy-light/35 border border-brand-burgundy/10 rounded-xl flex gap-3">
-            <Sparkles className="w-5 h-5 text-brand-burgundy shrink-0 animate-pulse" />
-            <p className="text-[10px] text-brand-burgundy font-bold leading-relaxed">
-              Wholesale catalog updates sync automatically from Shopify admin control. Stripe transaction accounts are isolated per registered doctor profile.
+            <Sparkles className="w-5 h-5 text-black shrink-0 animate-pulse" />
+            <p className="text-[10px] text-black font-bold leading-relaxed">
+              Wholesale catalog updates sync automatically. Stripe transaction accounts are isolated per registered doctor profile.
             </p>
           </div>
         </div>
@@ -149,8 +151,8 @@ export default function RepAccount() {
         </div>
 
         <form onSubmit={handleUpdatePassword} className="glass-panel p-6 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
-            <Lock className="w-4 h-4" />
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+            <Lock className="w-4 h-4 text-black" />
             <span>Update Password</span>
           </h3>
 
@@ -197,7 +199,7 @@ export default function RepAccount() {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
               {loading ? (
                 <>

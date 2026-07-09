@@ -6,9 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { 
   Loader2, 
   ArrowLeft, 
-  CreditCard, 
   CheckCircle,
-  Building2,
   FileText,
   Truck,
   HelpCircle,
@@ -16,49 +14,21 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
-  "pk_test_51T9hBMQ3ySlRFaIlj6lgc4yIgw2cYgV25GJGwHEqpPyW0A9t7dlgjqkFJbgOIJA3KHRLJ85ijSCkw8o3a7s9ohio00rwk4MhJ1"
-);
 
-const cardElementOptions = {
-  style: {
-    base: {
-      fontSize: "13px",
-      color: "#3f3335",
-      fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
-      "::placeholder": {
-        color: "#a0aec0",
-      },
-    },
-    invalid: {
-      color: "#700c1a",
-    },
-  },
-};
 
 function CheckoutForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const doctorId = searchParams.get("doctorId");
   const { token } = useAuthStore();
-  const stripe = useStripe();
-  const elements = useElements();
 
   const [pageLoading, setPageLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [doctor, setDoctor] = useState(null);
-  const [cardInfo, setCardInfo] = useState(null);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
-
-  // Payment choice
-  const [paymentChoice, setPaymentChoice] = useState("card_on_file"); // card_on_file or new_card
-  const [stripeFocused, setStripeFocused] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -76,20 +46,16 @@ function CheckoutForm() {
 
         // Fetch Doctor details
         const docRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${doctorId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${doctorId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!docRes.ok) throw new Error("Doctor profile not found.");
         const docData = await docRes.json();
         setDoctor(docData.doctor);
-        setCardInfo(docData.cardInfo);
-
-        // Pre-select payment choice based on saved card availability
-        setPaymentChoice(docData.cardInfo ? "card_on_file" : "new_card");
 
         // Fetch products
         const prodRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/products`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/products`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!prodRes.ok) throw new Error("Catalog load failed.");
@@ -125,59 +91,9 @@ function CheckoutForm() {
     setSubmitLoading(true);
 
     try {
-      // 1. If entering a new card, execute card registration via Stripe Elements first
-      if (paymentChoice === "new_card") {
-        if (!stripe || !elements) {
-          throw new Error("Stripe checkout module is still loading. Please try again.");
-        }
-
-        const cardElement = elements.getElement(CardElement);
-        if (!cardElement) {
-          throw new Error("Please enter card details.");
-        }
-
-        // Tokenize card securely on Stripe
-        const { error, paymentMethod } = await stripe.createPaymentMethod({
-          type: "card",
-          card: cardElement,
-          billing_details: {
-            name: doctor ? doctor.practice_name : "Practice Customer",
-            email: doctor ? doctor.email : undefined,
-          },
-        });
-
-        if (error) {
-          throw new Error(error.message || "Failed to process card details with Stripe.");
-        }
-
-        // Send paymentMethod.id and parsed card details to backend
-        const cardResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${doctorId}/card`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              payment_method_id: paymentMethod.id,
-              card_brand: paymentMethod.card.brand,
-              last4: paymentMethod.card.last4,
-              exp_month: paymentMethod.card.exp_month,
-              exp_year: paymentMethod.card.exp_year
-            })
-          }
-        );
-
-        if (!cardResponse.ok) {
-          const cardErr = await cardResponse.json();
-          throw new Error(cardErr.error || "Failed to configure billing details on doctor practice account.");
-        }
-      }
-
-      // 2. Submit order payload to backend
+      // 1. Submit order payload to backend
       const orderResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/orders`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/orders`,
         {
           method: "POST",
           headers: {
@@ -186,7 +102,6 @@ function CheckoutForm() {
           },
           body: JSON.stringify({
             doctor_id: doctorId,
-            payment_method: "card_on_file", // Uses either previously saved, or newly saved card on file
             items: cartItems.map((item) => ({
               product_id: item.product.id,
               quantity: item.quantity
@@ -204,9 +119,9 @@ function CheckoutForm() {
       // Clean local storage draft upon success
       localStorage.removeItem("lipistry_pending_order");
 
-      toast.success("Order placed successfully!");
-      // Redirect to Confirmation screen
-      router.push(`/rep/orders/confirmation?id=${result.order_id}`);
+      toast.success("Order drafted successfully. Redirecting to payment...");
+      // Redirect to Payment screen
+      router.push(`/rep/orders/pay?id=${result.order_id}`);
     } catch (err) {
       toast.error(err.message || "Failed to place order.");
     } finally {
@@ -215,9 +130,9 @@ function CheckoutForm() {
   };
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD"
+      currency: "INR"
     }).format(cents / 100);
   };
 
@@ -289,7 +204,7 @@ function CheckoutForm() {
                                 }
                               } catch (e) {}
                             }
-                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                             const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
 
                             return imgUrl ? (
@@ -328,85 +243,29 @@ function CheckoutForm() {
               <HelpCircle className="w-5 h-5 text-brand-burgundy shrink-0 mt-0.5" />
               <div>
                 <p className="text-slate-800 font-bold">Ship from Warehouse</p>
-                <p className="text-slate-500 text-[10px] mt-0.5">Order will be submitted automatically to Lipistry Shopify wholesale backend for dispatch.</p>
+                <p className="text-slate-500 text-[10px] mt-0.5">Order will be submitted automatically to Lipistry wholesale backend for dispatch.</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sidebar Billing & Action */}
+        {/* Sidebar Summary & Action */}
         <div className="space-y-6">
           <div className="glass-panel p-5 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-4">
             <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
-              <CreditCard className="w-4.5 h-4.5" />
-              <span>Billing Details</span>
+              <CheckCircle className="w-4.5 h-4.5" />
+              <span>Confirm & Pay</span>
             </h3>
 
-            {/* Toggle */}
-            {cardInfo && (
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPaymentChoice("card_on_file")}
-                  className={`
-                    py-2 rounded-xl text-[10px] font-bold border transition-all cursor-pointer
-                    ${paymentChoice === "card_on_file" 
-                      ? "bg-brand-burgundy-light border-brand-burgundy text-brand-burgundy" 
-                      : "border-slate-200 text-slate-655 hover:bg-slate-50"
-                    }
-                  `}
-                >
-                  Saved Card
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentChoice("new_card")}
-                  className={`
-                    py-2 rounded-xl text-[10px] font-bold border transition-all cursor-pointer
-                    ${paymentChoice === "new_card" 
-                      ? "bg-brand-burgundy-light border-brand-burgundy text-brand-burgundy" 
-                      : "border-slate-200 text-slate-655 hover:bg-slate-50"
-                    }
-                  `}
-                >
-                  Use New Card
-                </button>
-              </div>
-            )}
-
-            {paymentChoice === "card_on_file" && cardInfo ? (
-              <div className="p-3 bg-slate-50 border border-[#ebdfe1] rounded-xl text-xs font-semibold leading-relaxed text-left">
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Charge Saved Card</p>
-                <p className="text-slate-805 font-bold mt-1">{cardInfo.brand} ending in {cardInfo.last4}</p>
-                <p className="text-slate-500 text-[10px]">Expires: {cardInfo.expiry}</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="p-4 bg-slate-50 border border-[#ebdfe1] rounded-2xl space-y-3">
-                  <label className="block text-[8px] font-black text-slate-505 uppercase tracking-widest mb-1">
-                    Credit or Debit Card Details
-                  </label>
-                  <div className={`stripe-element-container ${stripeFocused ? "focused" : ""}`}>
-                    <CardElement
-                      options={cardElementOptions}
-                      onFocus={() => setStripeFocused(true)}
-                      onBlur={() => setStripeFocused(false)}
-                    />
-                  </div>
-                </div>
-
-                {/* Info Text */}
-                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
-                  * Card details are encrypted and tokenized securely. Saving this card updates the default payment method for this practice.
-                </p>
-              </div>
-            )}
-
             {/* Total breakdown */}
-            <div className="border-t border-[#ebdfe1]/50 pt-3 flex justify-between items-center text-xs font-black">
+            <div className="pt-2 flex justify-between items-center text-xs font-black">
               <span className="text-slate-550">Order Total</span>
               <span className="text-brand-burgundy text-base tracking-tight">{formatPrice(orderTotal)}</span>
             </div>
+
+            <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+              * Click to safely save order details and proceed to the secure payment screen.
+            </p>
 
             {/* Checkout action */}
             <button
@@ -415,7 +274,7 @@ function CheckoutForm() {
               className="w-full py-3 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-              <span>Place Order</span>
+              <span>Confirm & Proceed to Payment</span>
             </button>
           </div>
         </div>
@@ -426,17 +285,15 @@ function CheckoutForm() {
 
 export default function OrderReviewStep() {
   return (
-    <Elements stripe={stripePromise}>
-      <Suspense fallback={
-        <div className="flex h-[60vh] items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
-            <p className="text-slate-555 text-xs font-bold tracking-wider">Verifying checkout draft...</p>
-          </div>
+    <Suspense fallback={
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
+          <p className="text-slate-555 text-xs font-bold tracking-wider">Verifying checkout draft...</p>
         </div>
-      }>
-        <CheckoutForm />
-      </Suspense>
-    </Elements>
+      </div>
+    }>
+      <CheckoutForm />
+    </Suspense>
   );
 }

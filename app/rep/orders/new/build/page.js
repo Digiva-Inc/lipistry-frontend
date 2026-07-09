@@ -32,7 +32,7 @@ function BuildOrderContent() {
       try {
         // 1. Fetch Doctor
         const docRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${doctorId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${doctorId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!docRes.ok) throw new Error("Doctor not found.");
@@ -41,7 +41,7 @@ function BuildOrderContent() {
 
         // 2. Fetch Products
         const prodRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/products`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/products`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!prodRes.ok) throw new Error("Failed to load products catalog.");
@@ -111,9 +111,9 @@ function BuildOrderContent() {
   const subtotal = cartItems.reduce((acc, curr) => acc + curr.total, 0);
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD"
+      currency: "INR"
     }).format(cents / 100);
   };
 
@@ -144,12 +144,12 @@ function BuildOrderContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-2xl border border-[#ebdfe1] shadow-sm">
         <div className="space-y-1">
-          <span className="text-[9px] font-black text-brand-burgundy bg-brand-burgundy-light px-2.5 py-0.5 rounded-full border border-brand-burgundy/10 uppercase tracking-wider">
-            Step 2 of 3
-          </span>
+        <span className="text-[9px] font-black text-black bg-neutral-100 px-2.5 py-0.5 rounded-full border border-neutral-200 uppercase tracking-wider">
+  Step 2 of 3
+</span>
           <h1 className="text-lg font-bold text-slate-900 mt-1">Build Wholesale Order</h1>
           <div className="flex items-center gap-1.5 text-xs text-slate-650 font-bold">
-            <Building2 className="w-4 h-4 text-brand-burgundy shrink-0" />
+            <Building2 className="w-4 h-4 text-black shrink-0" />
             <span>{doctor.practice_name} (Dr. {doctor.doctor_first_name} {doctor.doctor_last_name})</span>
           </div>
         </div>
@@ -157,17 +157,19 @@ function BuildOrderContent() {
         {/* Subtotal Display */}
         <div className="bg-[#fbf7f8] px-4 py-2.5 rounded-xl border border-[#ebdfe1] text-right shrink-0">
           <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Subtotal</div>
-          <div className="text-base font-black text-brand-burgundy mt-0.5">{formatPrice(subtotal)}</div>
+          <div className="text-base font-black text-black mt-0.5">
+  {formatPrice(subtotal)}
+</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Products catalog list */}
         <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
-            <ShoppingCart className="w-4.5 h-4.5" />
-            <span>Wholesale Case Catalog</span>
-          </h3>
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5 flex items-center gap-1.5">
+  <ShoppingCart className="w-4.5 h-4.5 text-black" />
+  <span>Wholesale Case Catalog</span>
+</h3>
 
           <div className="space-y-3">
             {products.map((prod) => {
@@ -185,7 +187,7 @@ function BuildOrderContent() {
                           }
                         } catch (e) {}
                       }
-                      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                      const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                       const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
 
                       return imgUrl ? (
@@ -241,9 +243,9 @@ function BuildOrderContent() {
         {/* Sidebar Summary & Review */}
         <div className="space-y-6">
           <div className="glass-panel p-5 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm space-y-4">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-burgundy border-b border-[#ebdfe1]/50 pb-1.5">
-              <span>Order Summary</span>
-            </h3>
+           <h3 className="text-xs font-extrabold uppercase tracking-wider text-black border-b border-[#ebdfe1]/50 pb-1.5">
+  <span>Order Summary</span>
+</h3>
 
             {cartItems.length === 0 ? (
               <div className="py-6 text-center text-xs text-slate-400 font-semibold border-b border-[#ebdfe1]/30">
@@ -264,17 +266,19 @@ function BuildOrderContent() {
 
             <div className="flex justify-between items-center text-xs font-black">
               <span className="text-slate-550">Subtotal</span>
-              <span className="text-brand-burgundy text-base tracking-tight">{formatPrice(subtotal)}</span>
+              <span className="text-black text-base tracking-tight">
+  {formatPrice(subtotal)}
+</span>
             </div>
 
-            <button
-              onClick={handleContinue}
-              disabled={subtotal === 0}
-              className="w-full py-3 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span>Continue to Review</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+           <button
+  onClick={handleContinue}
+  disabled={subtotal === 0}
+  className="w-full py-3 bg-black hover:bg-neutral-800 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  <span>Continue to Review</span>
+  <ChevronRight className="w-4 h-4" />
+</button>
           </div>
         </div>
       </div>

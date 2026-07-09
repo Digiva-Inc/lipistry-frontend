@@ -30,7 +30,7 @@ export default function MyDoctors() {
       if (search) queryParams.append("search", search);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors?${queryParams.toString()}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors?${queryParams.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -65,12 +65,12 @@ export default function MyDoctors() {
           <p className="text-slate-500 text-xs mt-1 font-semibold">Manage registered medical accounts, save payment details, and launch wholesale order placement.</p>
         </div>
         <Link
-          href="/rep/doctors/new"
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Doctor</span>
-        </Link>
+  href="/rep/doctors/new"
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
+>
+  <Plus className="w-4 h-4" />
+  <span>Add New Doctor</span>
+</Link>
       </div>
 
       {/* Search Bar */}
@@ -118,7 +118,7 @@ export default function MyDoctors() {
                     <tr key={doc.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4 font-bold text-slate-900">
                         <div className="flex items-center gap-2">
-                          <Building2 className="w-4.5 h-4.5 text-brand-burgundy shrink-0" />
+                          <Building2 className="w-4.5 h-4.5 text-black shrink-0" />
                           <span>{doc.practice_name}</span>
                         </div>
                       </td>
@@ -134,7 +134,7 @@ export default function MyDoctors() {
                           <div className="flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>
-                              {new Date(doc.last_order_date).toLocaleDateString("en-US", {
+                              {new Date(doc.last_order_date).toLocaleDateString("en-IN", {
                                 month: "short",
                                 day: "numeric",
                                 year: "numeric",

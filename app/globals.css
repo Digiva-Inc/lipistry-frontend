@@ -48,23 +48,45 @@ body {
 
 .glass-input {
   background: #ffffff;
-  border: 1px solid #d4c2c5;
   color: #3f3335;
-  transition: all 0.2s ease-in-out;
+  border: 1px solid #000000;
+  transition: border-color 0.2s ease-in-out;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.glass-input:focus {
+.glass-input:focus,
+.glass-input:focus-visible,
+.glass-input:active {
   background: #ffffff;
-  border-color: #700c1a;
-  box-shadow: 0 0 0 3px rgba(112, 12, 26, 0.12);
-  outline: none;
+  color: #3f3335;
+  border: 1px solid #000000 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+}
+
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid #000000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
 }
 
 /* Stripe elements custom inputs container */
 .stripe-element-container {
   background: #ffffff;
   border: 1px solid #d4c2c5;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 12px;
   transition: all 0.2s ease-in-out;
 }

@@ -10,12 +10,17 @@ import {
   Filter, 
   Download, 
   Eye,
+  CheckCircle2,
   DollarSign,
   User,
   HeartHandshake,
-  Activity,
-  ShoppingBag,
-  Pencil
+  ArrowUpRight,
+  Truck,
+  Box,
+  CheckSquare,
+  Square,
+  AlertCircle,
+  ShoppingBag
 } from "lucide-react";
 import { useAuthStore } from "../../../store/authStore";
 import { toast } from "sonner";
@@ -76,10 +81,10 @@ export default function AllOrders() {
     async function loadFilterOptions() {
       try {
         const [repsRes, docsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/reps`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/reps`, {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/doctors`, {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
@@ -114,7 +119,7 @@ export default function AllOrders() {
       if (endDate) queryParams.append("end_date", endDate);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders?${queryParams.toString()}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders?${queryParams.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -149,7 +154,7 @@ export default function AllOrders() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${order.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${order.id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -178,7 +183,7 @@ export default function AllOrders() {
     setUpdatingStatus(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${orderDetail.order.id}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderDetail.order.id}/status`,
         {
           method: "PUT",
           headers: {
@@ -202,7 +207,7 @@ export default function AllOrders() {
       toast.success("Order status updated successfully!");
       
       const detailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${orderDetail.order.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderDetail.order.id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -224,7 +229,7 @@ export default function AllOrders() {
     const targetStatus = approved ? 'return_approved' : 'delivered';
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${orderDetail.order.id}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderDetail.order.id}/status`,
         {
           method: "PUT",
           headers: {
@@ -245,7 +250,7 @@ export default function AllOrders() {
       toast.success(approved ? "Return request approved!" : "Return request rejected.");
       
       const detailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${orderDetail.order.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderDetail.order.id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -267,7 +272,7 @@ export default function AllOrders() {
     setUpdatingStatus(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${orderDetail.order.id}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderDetail.order.id}/status`,
         {
           method: "PUT",
           headers: {
@@ -288,7 +293,7 @@ export default function AllOrders() {
       toast.success("Refund processed successfully!");
       
       const detailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${orderDetail.order.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderDetail.order.id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -320,7 +325,7 @@ export default function AllOrders() {
     setQuickUpdating(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${quickOrder.id}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${quickOrder.id}/status`,
         {
           method: "PUT",
           headers: {
@@ -356,7 +361,7 @@ export default function AllOrders() {
     const targetStatus = approved ? 'returned' : 'delivered';
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${quickOrder.id}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${quickOrder.id}/status`,
         {
           method: "PUT",
           headers: {
@@ -398,8 +403,7 @@ export default function AllOrders() {
       "Doctor Name",
       "Total (USD)",
       "Status",
-      "Created At",
-      "Shopify Order ID"
+      "Created At"
     ];
 
     const rows = orders.map((o) => [
@@ -409,8 +413,7 @@ export default function AllOrders() {
       `Dr. ${o.doctor_first_name} ${o.doctor_last_name}`,
       (o.total_cents / 100).toFixed(2),
       o.status.toUpperCase(),
-      new Date(o.created_at).toISOString(),
-      o.shopify_order_id || "N/A"
+      new Date(o.created_at).toISOString()
     ]);
 
     const csvContent = 
@@ -428,9 +431,9 @@ export default function AllOrders() {
   };
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(cents / 100);
   };
 
@@ -492,7 +495,7 @@ export default function AllOrders() {
           onClick={handleExportCSV}
           className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 active:scale-[0.98] text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
         >
-          <Download className="w-4 h-4 text-brand-burgundy" />
+          <Download className="w-4 h-4 text-black" />
           <span>Export to CSV</span>
         </button>
       </div>
@@ -500,7 +503,7 @@ export default function AllOrders() {
       {/* Advanced Filter Panel */}
       <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4 shadow-sm">
         <div className="flex items-center gap-2 text-slate-750 font-bold text-xs">
-          <Filter className="w-4.5 h-4.5 text-brand-burgundy" />
+          <Filter className="w-4.5 h-4.5 text-black" />
           <span>Filter Order History</span>
         </div>
 
@@ -626,14 +629,19 @@ export default function AllOrders() {
                         <div className="font-bold text-slate-800">{o.doctor_practice}</div>
                         <div className="text-[10px] text-slate-500 font-semibold">Dr. {o.doctor_first_name} {o.doctor_last_name}</div>
                       </td>
-                      <td className="px-6 py-4 font-extrabold text-slate-800">{formatPrice(o.total_cents)}</td>
+                      <td className="px-6 py-4">
+                        <div className="font-extrabold text-slate-800">{formatPrice(o.total_cents)}</div>
+                        {o.stripe_payment_intent_id && (
+                           <div className="text-[8px] text-emerald-600 font-bold mt-1">PAID (STRIPE)</div>
+                        )}
+                      </td>
                       <td className="px-6 py-4">
                         <span className={`px-2.5 py-1 rounded-full text-[9px] font-extrabold border ${getStatusColor(o.status)}`}>
                           {formatStatus(o.status)}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-slate-600 font-semibold">
-                        {new Date(o.created_at).toLocaleDateString("en-US", {
+                        {new Date(o.created_at).toLocaleDateString("en-IN", {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
@@ -646,7 +654,7 @@ export default function AllOrders() {
                           onClick={() => handleOpenDetails(o)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
                         >
-                          <Eye className="w-3.5 h-3.5 text-brand-burgundy" />
+                          <Eye className="w-3.5 h-3.5 text-black" />
                           <span>View</span>
                         </button>
                       </td>
@@ -671,7 +679,7 @@ export default function AllOrders() {
             </button>
             
             <div className="mb-5 flex items-center gap-2 shrink-0">
-              <FileSpreadsheet className="w-5 h-5 text-brand-burgundy" />
+              <FileSpreadsheet className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Order Details: {selectedOrder?.order_number}</h2>
             </div>
 
@@ -683,15 +691,41 @@ export default function AllOrders() {
             ) : orderDetail ? (
               <div className="space-y-6 overflow-y-auto pr-1 flex-1 text-left">
                 {/* Meta blocks */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   {/* Status Card */}
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Order Status</span>
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold border inline-block ${getStatusColor(orderDetail.order.status)}`}>
                       {formatStatus(orderDetail.order.status)}
                     </span>
-                    {orderDetail.order.shopify_order_id && (
-                      <div className="text-[9px] font-mono text-slate-500 mt-2 font-semibold">ID: {orderDetail.order.shopify_order_id}</div>
+                  </div>
+
+                  {/* Financial Status */}
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Stripe Payment</span>
+                      {orderDetail.order.stripe_payment_intent_id ? (
+                        <div>
+                          <div className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Collected</span>
+                          </div>
+                          <div className="text-[8px] font-mono text-slate-400 mt-1 break-all bg-white px-1 py-0.5 rounded border border-slate-100 inline-block">
+                            {orderDetail.order.stripe_payment_intent_id}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-bold text-amber-600">Pending</span>
+                      )}
+                    </div>
+                    {orderDetail.order.payment_brand && (
+                      <div className="mt-2 pt-2 border-t border-slate-200">
+                        <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">Method</span>
+                        <div className="text-[11px] font-bold text-slate-700 capitalize">
+                          {orderDetail.order.payment_brand} 
+                          {orderDetail.order.payment_last4 && orderDetail.order.payment_last4 !== 'unknown' && ` •••• ${orderDetail.order.payment_last4}`}
+                        </div>
+                      </div>
                     )}
                   </div>
 
@@ -766,7 +800,7 @@ export default function AllOrders() {
                         <div>
                           <p className="font-bold text-slate-700 mb-1.5">Proof Image:</p>
                           {(() => {
-                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                             const imgUrl = orderDetail.order.return_proof_image.startsWith("http") 
                               ? orderDetail.order.return_proof_image 
                               : `${baseUrl}${orderDetail.order.return_proof_image}`;
@@ -931,13 +965,13 @@ export default function AllOrders() {
                       )}
 
                       <div className="flex justify-end pt-1">
-                        <button
-                          type="submit"
-                          disabled={updatingStatus}
-                          className="px-4 py-2 bg-brand-burgundy text-white hover:bg-brand-burgundy-dark rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
-                        >
-                          {updatingStatus ? "Updating..." : "Update Status"}
-                        </button>
+                       <button
+  type="submit"
+  disabled={updatingStatus}
+  className="px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
+>
+  {updatingStatus ? "Updating..." : "Update Status"}
+</button>
                       </div>
                     </form>
                   )}
@@ -971,7 +1005,7 @@ export default function AllOrders() {
                                       }
                                     } catch (e) {}
                                   }
-                                  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                                  const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                                   const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
 
                                   return imgUrl ? (

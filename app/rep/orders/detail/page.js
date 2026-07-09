@@ -21,7 +21,8 @@ import {
   RefreshCw,
   Clock,
   Sparkles,
-  Check
+  Check,
+  FileText
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -59,7 +60,7 @@ function OrderDetailContent() {
     async function loadOrder() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/orders/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -83,9 +84,9 @@ function OrderDetailContent() {
   }, [token, id]);
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD"
+      currency: "INR"
     }).format(cents / 100);
   };
 
@@ -149,7 +150,7 @@ function OrderDetailContent() {
       formData.append("file", proofFile);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/orders/${id}/return`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${id}/return`,
         {
           method: "POST",
           headers: {
@@ -169,7 +170,7 @@ function OrderDetailContent() {
 
       // Reload order details
       const detailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/orders/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (detailRes.ok) {
@@ -186,11 +187,11 @@ function OrderDetailContent() {
   const formatFullDateTime = (ts) => {
     if (!ts) return "";
     const d = new Date(ts);
-    return d.toLocaleDateString("en-US", {
+    return d.toLocaleDateString("en-IN", {
       month: "short",
       day: "numeric",
       year: "numeric"
-    }) + " at " + d.toLocaleTimeString("en-US", {
+    }) + " at " + d.toLocaleTimeString("en-IN", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true
@@ -202,12 +203,12 @@ function OrderDetailContent() {
     const { order } = orderDetail;
     const steps = [];
     
-    // Step 1: Placed / Paid / Failed
-    if (order.status === "failed_payment") {
+    // Step 1: Order Drafted
+    if (order.status === "failed_payment" || order.status === "cancelled") {
       steps.push({
-        key: "failed_payment",
-        title: "Payment Attempt Failed",
-        description: "Wholesale order checkout was attempted, but the payment failed or was declined.",
+        key: "cancelled",
+        title: "Order Cancelled / Payment Failed",
+        description: "The checkout process was cancelled or payment failed.",
         timestamp: order.created_at,
         isActive: true,
         isCancelled: true,
@@ -215,17 +216,38 @@ function OrderDetailContent() {
       });
     } else {
       steps.push({
-        key: "paid",
-        title: "Order Placed & Paid",
-        description: "Wholesale order successfully created and Stripe payment authorization completed.",
+        key: "draft",
+        title: "Order Drafted",
+        description: "Wholesale order draft created. Pending checkout.",
         timestamp: order.created_at,
         isActive: true,
-        icon: CreditCard,
+        icon: FileText, // Make sure FileText is imported if not already, or use FileSpreadsheet
       });
     }
 
-    // Step 2: Submitted to Warehouse
-    const submittedActive = ["submitted_warehouse", "confirmed", "shipped", "out_for_delivery", "delivered", "return_requested", "returned"].includes(order.status);
+    // Step 2: Payment
+    if (order.status === "pending_payment") {
+       steps.push({
+         key: "pending",
+         title: "Awaiting Payment",
+         description: "Complete your payment securely via Stripe to finalize the order.",
+         timestamp: null,
+         isActive: false, // Not reached yet
+         icon: Clock,
+       });
+    } else if (order.status !== "failed_payment" && order.status !== "cancelled") {
+       steps.push({
+         key: "paid",
+         title: "Order Placed & Paid",
+         description: "Payment authorized successfully. Order officially placed.",
+         timestamp: order.created_at,
+         isActive: true,
+         icon: CreditCard,
+       });
+    }
+
+    // Step 3: Submitted to Warehouse
+    const submittedActive = ["submitted_warehouse", "confirmed", "shipped", "out_for_delivery", "delivered", "return_requested", "return_approved", "returned", "refunded"].includes(order.status);
     steps.push({
       key: "submitted_warehouse",
       title: "Submitted to Warehouse",
@@ -237,8 +259,8 @@ function OrderDetailContent() {
       icon: Building2,
     });
 
-    // Step 3: Confirmed
-    const confirmedActive = ["confirmed", "shipped", "out_for_delivery", "delivered", "return_requested", "returned"].includes(order.status);
+    // Step 4: Confirmed
+    const confirmedActive = ["confirmed", "shipped", "out_for_delivery", "delivered", "return_requested", "return_approved", "returned", "refunded"].includes(order.status);
     steps.push({
       key: "confirmed",
       title: "Order Confirmed",
@@ -250,8 +272,8 @@ function OrderDetailContent() {
       icon: FileSpreadsheet,
     });
 
-    // Step 4: Shipped
-    const shippedActive = ["shipped", "out_for_delivery", "delivered", "return_requested", "returned"].includes(order.status);
+    // Step 5: Shipped
+    const shippedActive = ["shipped", "out_for_delivery", "delivered", "return_requested", "return_approved", "returned", "refunded"].includes(order.status);
     steps.push({
       key: "shipped",
       title: "Shipped",
@@ -263,8 +285,8 @@ function OrderDetailContent() {
       icon: Truck,
     });
 
-    // Step 5: Out for Delivery
-    const outActive = ["out_for_delivery", "delivered", "return_requested", "returned"].includes(order.status);
+    // Step 6: Out for Delivery
+    const outActive = ["out_for_delivery", "delivered", "return_requested", "return_approved", "returned", "refunded"].includes(order.status);
     steps.push({
       key: "out_for_delivery",
       title: "Out for Delivery",
@@ -276,8 +298,8 @@ function OrderDetailContent() {
       icon: Truck,
     });
 
-    // Step 6: Delivered
-    const deliveredActive = ["delivered", "return_requested", "returned"].includes(order.status);
+    // Step 7: Delivered
+    const deliveredActive = ["delivered", "return_requested", "return_approved", "returned", "refunded"].includes(order.status);
     steps.push({
       key: "delivered",
       title: "Delivered",
@@ -287,53 +309,46 @@ function OrderDetailContent() {
       icon: CheckCircle2,
     });
 
-    // Step 7: Return Requested (Conditional)
+    // Return Sequence (Conditional)
     if (order.return_reason || ["return_requested", "return_approved", "returned", "refunded"].includes(order.status)) {
+      
       const retReqActive = ["return_requested", "return_approved", "returned", "refunded"].includes(order.status);
       steps.push({
         key: "return_requested",
         title: "Return Requested",
         description: `Return claim submitted: "${order.return_reason || 'Unknown reason'}"`,
-        timestamp: order.return_requested_at || order.updated_at,
+        timestamp: retReqActive ? (order.return_requested_at || order.updated_at) : null,
         isActive: retReqActive,
         icon: RefreshCw,
       });
-    }
 
-    // Step 8: Return Approved (Conditional)
-    if (["return_approved", "returned", "refunded"].includes(order.status)) {
       const retAppActive = ["return_approved", "returned", "refunded"].includes(order.status);
       steps.push({
         key: "return_approved",
-        title: "Return Approved",
-        description: "Return request approved. Awaiting product pick up by warehouse.",
-        timestamp: order.updated_at,
+        title: "Return Approved / Pending Pickup",
+        description: "Return request approved. Courier will pick up the package shortly.",
+        timestamp: retAppActive ? order.updated_at : null,
         isActive: retAppActive,
-        icon: FileSpreadsheet,
+        icon: Truck,
       });
-    }
 
-    // Step 9: Returned to Warehouse (Conditional)
-    if (["returned", "refunded"].includes(order.status)) {
       const returnedActive = ["returned", "refunded"].includes(order.status);
       steps.push({
         key: "returned",
         title: "Returned to Warehouse",
         description: "Products physically received and restocked by warehouse staff.",
-        timestamp: order.return_processed_at || order.updated_at,
+        timestamp: returnedActive ? (order.return_processed_at || order.updated_at) : null,
         isActive: returnedActive,
         icon: Package,
       });
-    }
 
-    // Step 10: Refunded (Conditional)
-    if (order.status === "refunded") {
+      const refundedActive = order.status === "refunded" || (order.status === "returned" && order.total_cents > 0); // Sometimes refunds process with 'returned'
       steps.push({
         key: "refunded",
         title: "Refund Processed",
         description: `Refund successfully processed via Stripe.`,
-        timestamp: order.updated_at,
-        isActive: true,
+        timestamp: refundedActive ? order.updated_at : null,
+        isActive: refundedActive,
         icon: Sparkles,
       });
     }
@@ -398,7 +413,7 @@ function OrderDetailContent() {
           <div className="flex items-center gap-1 text-slate-500 text-xs font-semibold">
             <Calendar className="w-4.5 h-4.5 text-slate-400 shrink-0" />
             <span>
-              {new Date(order.created_at).toLocaleDateString("en-US", {
+              {new Date(order.created_at).toLocaleDateString("en-IN", {
                 month: "long",
                 day: "numeric",
                 year: "numeric"
@@ -407,9 +422,22 @@ function OrderDetailContent() {
           </div>
         </div>
 
-        <div className="text-right">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Total Stripe Charged</span>
-          <span className="text-brand-burgundy text-lg font-black">{formatPrice(order.total_cents)}</span>
+        <div className="text-right flex flex-col items-end gap-2">
+          <div>
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">
+              {(order.status === "pending_payment" || order.status === "failed_payment") ? "Total Amount Due" : "Total Stripe Charged"}
+            </span>
+            <span className="text-brand-burgundy text-lg font-black">{formatPrice(order.total_cents)}</span>
+          </div>
+          {(order.status === "pending_payment" || order.status === "failed_payment") && (
+            <Link
+              href={`/rep/orders/pay?id=${order.id}`}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-sm transition-all"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Complete Payment</span>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -449,7 +477,7 @@ function OrderDetailContent() {
                                 }
                               } catch (e) {}
                             }
-                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                             const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
 
                             return imgUrl ? (
@@ -565,7 +593,7 @@ function OrderDetailContent() {
                       <div>
                         <p className="font-bold text-slate-700 mb-1">Proof Image:</p>
                         {(() => {
-                          const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                          const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                           const imgUrl = order.return_proof_image.startsWith("http") 
                             ? order.return_proof_image 
                             : `${baseUrl}${order.return_proof_image}`;
@@ -614,7 +642,7 @@ function OrderDetailContent() {
                       <div>
                         <p className="font-bold text-slate-700 mb-1">Proof Image:</p>
                         {(() => {
-                          const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                          const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                           const imgUrl = order.return_proof_image.startsWith("http") 
                             ? order.return_proof_image 
                             : `${baseUrl}${order.return_proof_image}`;
@@ -710,13 +738,7 @@ function OrderDetailContent() {
               </div>
             </div>
 
-            {/* Shopify Reference */}
-            <div className="pt-4 border-t border-[#ebdfe1]/50 space-y-1.5">
-              <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Shopify Reference ID</span>
-              <div className="p-2 bg-slate-50 border border-[#ebdfe1] rounded-xl font-mono text-xs text-slate-800 font-semibold inline-block">
-                {order.shopify_order_number || "SH_Pending"}
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
