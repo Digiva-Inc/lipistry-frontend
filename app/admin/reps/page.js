@@ -339,7 +339,7 @@ export default function ManageReps() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-brand-burgundy" />
+              <UserPlus className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Add New Representative</h2>
             </div>
             
@@ -466,7 +466,7 @@ export default function ManageReps() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <Edit className="w-5 h-5 text-brand-burgundy" />
+              <Edit className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Edit Representative Details</h2>
             </div>
             
@@ -583,7 +583,7 @@ export default function ManageReps() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <Key className="w-5 h-5 text-brand-burgundy" />
+              <Key className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Reset Representative Password</h2>
             </div>
             

@@ -544,7 +544,7 @@ export default function AllDoctors() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <Building className="w-5 h-5 text-brand-burgundy" />
+              <Building className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">
                 {addModalOpen ? "Register Practice Profile" : "Edit Practice Details"}
               </h2>
@@ -805,7 +805,7 @@ export default function AllDoctors() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <GitMerge className="w-5 h-5 text-brand-burgundy" />
+              <GitMerge className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Reassign Account Territory</h2>
             </div>
             
@@ -864,7 +864,7 @@ export default function AllDoctors() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-brand-burgundy" />
+              <CreditCard className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Manage Card on File</h2>
             </div>
             

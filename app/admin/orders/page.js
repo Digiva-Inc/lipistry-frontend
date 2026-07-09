@@ -679,7 +679,7 @@ export default function AllOrders() {
             </button>
             
             <div className="mb-5 flex items-center gap-2 shrink-0">
-              <FileSpreadsheet className="w-5 h-5 text-brand-burgundy" />
+              <FileSpreadsheet className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Order Details: {selectedOrder?.order_number}</h2>
             </div>
 

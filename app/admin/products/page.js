@@ -457,7 +457,7 @@ export default function ManageProducts() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-brand-burgundy" />
+              <ShoppingBag className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Add New Product Variant</h2>
             </div>
             
@@ -609,7 +609,7 @@ export default function ManageProducts() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <Edit className="w-5 h-5 text-brand-burgundy" />
+              <Edit className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Edit Product Details</h2>
             </div>
             
@@ -768,7 +768,7 @@ export default function ManageProducts() {
             </button>
             
             <div className="mb-5 flex items-center gap-2 shrink-0">
-              <Eye className="w-5 h-5 text-brand-burgundy" />
+              <Eye className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Product Details</h2>
             </div>
 

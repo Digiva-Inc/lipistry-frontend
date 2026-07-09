@@ -71,7 +71,7 @@ export default function SelectDoctorStep() {
 
       {/* Header */}
       <div>
-        <span className="text-[9px] font-black text-brand-burgundy bg-brand-burgundy-light px-2.5 py-0.5 rounded-full border border-brand-burgundy/10 uppercase tracking-wider">
+       <span className="text-[9px] font-black text-black bg-brand-black-light px-2.5 py-0.5 rounded-full border border-brand-black/10 uppercase tracking-wider">
           Step 1 of 3
         </span>
         <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-2">Select Practice Profile</h1>
@@ -114,7 +114,7 @@ export default function SelectDoctorStep() {
                 >
                   <div className="space-y-0.5">
                     <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Building2 className="w-3.5 h-3.5 text-brand-burgundy shrink-0" />
+                     <Building2 className="w-3.5 h-3.5 text-black shrink-0" />
                       <span>{doc.practice_name}</span>
                     </div>
                     <div className="text-[10px] text-slate-500 font-semibold pl-5">
@@ -132,7 +132,7 @@ export default function SelectDoctorStep() {
         <div className="pt-3 border-t border-[#ebdfe1]/50 text-center">
           <Link
             href="/rep/doctors/new"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-burgundy hover:text-brand-burgundy-hover transition-colors"
+className="inline-flex items-center gap-1.5 text-xs font-bold text-black hover:text-gray-700 transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             <span>Register New Doctor Practice</span>
