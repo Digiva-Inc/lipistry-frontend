@@ -20,16 +20,31 @@ function OrderConfirmationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const sessionId = searchParams.get("session_id");
   const { token } = useAuthStore();
 
   const [loading, setLoading] = useState(true);
+  const [verifying, setVerifying] = useState(!!sessionId);
   const [orderDetail, setOrderDetail] = useState(null);
 
   useEffect(() => {
     async function loadOrder() {
       try {
+        // Fallback sync: if session_id exists, ping our server to manually verify the transaction
+        if (sessionId) {
+          try {
+            await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${id}/verify-payment?session_id=${sessionId}`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          } catch (verifyErr) {
+            console.warn("Fallback verification ping failed", verifyErr);
+          }
+          setVerifying(false);
+        }
+
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/orders/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/orders/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -52,18 +67,20 @@ function OrderConfirmationContent() {
   }, [token, id]);
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD"
+      currency: "INR"
     }).format(cents / 100);
   };
 
-  if (loading) {
+  if (loading || verifying) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-brand-burgundy animate-spin" />
-          <p className="text-slate-550 text-xs font-bold tracking-wider">Syncing confirmation details...</p>
+          <p className="text-slate-550 text-xs font-bold tracking-wider">
+            {verifying ? "Verifying secure payment..." : "Syncing confirmation details..."}
+          </p>
         </div>
       </div>
     );
@@ -83,13 +100,37 @@ function OrderConfirmationContent() {
     <div className="max-w-2xl mx-auto space-y-6 animate-fadeIn text-left print:p-0 print:max-w-full">
       {/* Visual Header Success Badge */}
       <div className="glass-panel p-6 rounded-2xl border border-[#ebdfe1] bg-white shadow-sm flex flex-col items-center text-center space-y-3 print:border-none print:shadow-none">
-        <div className="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center">
-          <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-slate-900">Order Placed Successfully!</h1>
-          <p className="text-slate-500 text-xs font-semibold mt-1">Stripe transaction completed. Order queued for Shopify wholesale warehouse fulfillment.</p>
-        </div>
+        {order.status === "submitted_warehouse" ? (
+          <>
+            <div className="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Order Placed Successfully!</h1>
+              <p className="text-slate-500 text-xs font-semibold mt-1">Stripe transaction completed. Order queued for wholesale warehouse fulfillment.</p>
+            </div>
+          </>
+        ) : order.status === "failed_payment" ? (
+          <>
+            <div className="w-12 h-12 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center">
+              <span className="text-rose-500 font-bold text-xl">!</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Payment Failed</h1>
+              <p className="text-slate-500 text-xs font-semibold mt-1">The Stripe transaction was declined or failed.</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-12 h-12 bg-amber-50 border border-amber-100 rounded-full flex items-center justify-center">
+              <Loader2 className="w-6 h-6 text-amber-500 animate-spin" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Payment Processing...</h1>
+              <p className="text-slate-500 text-xs font-semibold mt-1">We are waiting for Stripe to confirm this transaction via Webhook.</p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Invoice receipt print body */}
@@ -103,7 +144,7 @@ function OrderConfirmationContent() {
           <div className="text-right">
             <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Order Date</span>
             <span className="text-xs font-bold text-slate-700">
-              {new Date(order.created_at).toLocaleDateString("en-US", {
+              {new Date(order.created_at).toLocaleDateString("en-IN", {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -125,10 +166,9 @@ function OrderConfirmationContent() {
             <div className="text-[10px] text-slate-650 font-bold">Dr. {order.doctor_first_name} {order.doctor_last_name}</div>
           </div>
           <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Shopify Fulfillment</h4>
+            <h4 className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Warehouse Fulfillment</h4>
             <div className="p-2 bg-brand-burgundy-light/35 border border-brand-burgundy/10 rounded-xl">
               <p className="text-[10px] font-bold text-brand-burgundy">Status: QUEUED FOR SHIPMENT</p>
-              <p className="text-[9px] font-mono text-slate-505 font-bold mt-0.5">Reference: {order.shopify_order_number || "SH_Pending"}</p>
             </div>
           </div>
         </div>
@@ -165,7 +205,7 @@ function OrderConfirmationContent() {
                               }
                             } catch (e) {}
                           }
-                          const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                          const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                           const imgUrl = firstImg ? (firstImg.startsWith("http") ? firstImg : `${baseUrl}${firstImg}`) : null;
 
                           return imgUrl ? (

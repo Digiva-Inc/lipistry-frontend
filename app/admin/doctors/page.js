@@ -109,11 +109,11 @@ export default function AllDoctors() {
     try {
       const [docsResponse, repsResponse] = await Promise.all([
         fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors`,
+          `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors`,
           { headers: { Authorization: `Bearer ${token}` } }
         ),
         fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/reps`,
+          `${process.env.NEXT_PUBLIC_API_URL}/admin/reps`,
           { headers: { Authorization: `Bearer ${token}` } }
         )
       ]);
@@ -220,7 +220,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors`,
         {
           method: "POST",
           headers: {
@@ -263,7 +263,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors/${selectedDoctor.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors/${selectedDoctor.id}`,
         {
           method: "PUT",
           headers: {
@@ -301,7 +301,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors/${selectedDoctor.id}/reassign`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors/${selectedDoctor.id}/reassign`,
         {
           method: "PUT",
           headers: {
@@ -340,7 +340,7 @@ export default function AllDoctors() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/doctors/${selectedDoctor.id}/card`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/doctors/${selectedDoctor.id}/card`,
         {
           method: "POST",
           headers: {
@@ -397,13 +397,13 @@ export default function AllDoctors() {
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Manage Practice Accounts</h1>
           <p className="text-slate-500 text-xs mt-1 font-semibold">View doctor profiles, practice addresses, and manage their assigned sales representatives.</p>
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Add Doctor</span>
-        </button>
+      <button
+  onClick={handleOpenAdd}
+  className="flex items-center gap-2 px-4 py-2.5 bg-black hover:bg-neutral-800 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all duration-200 cursor-pointer"
+>
+  <UserPlus className="w-4 h-4" />
+  <span>Add Doctor</span>
+</button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -506,21 +506,21 @@ export default function AllDoctors() {
                           onClick={() => handleOpenEdit(doc)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
                         >
-                          <Edit className="w-3.5 h-3.5 text-brand-burgundy" />
+                          <Edit className="w-3.5 h-3.5 text-black" />
                           <span>Edit</span>
                         </button>
                         <button
                           onClick={() => handleOpenCard(doc)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
                         >
-                          <CreditCard className="w-3.5 h-3.5 text-brand-burgundy" />
+                          <CreditCard className="w-3.5 h-3.5 text-black" />
                           <span>Card</span>
                         </button>
                         <button
                           onClick={() => handleOpenReassign(doc)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
                         >
-                          <GitMerge className="w-3.5 h-3.5 text-brand-burgundy" />
+                          <GitMerge className="w-3.5 h-3.5 text-black" />
                           <span>Reassign</span>
                         </button>
                       </td>
@@ -544,7 +544,7 @@ export default function AllDoctors() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <Building className="w-5 h-5 text-brand-burgundy" />
+              <Building className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">
                 {addModalOpen ? "Register Practice Profile" : "Edit Practice Details"}
               </h2>
@@ -777,13 +777,17 @@ export default function AllDoctors() {
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                  <span>{addModalOpen ? "Register Profile" : "Save Changes"}</span>
-                </button>
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {submitLoading ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <Save className="w-3.5 h-3.5" />
+  )}
+  <span>{addModalOpen ? "Register Profile" : "Save Changes"}</span>
+</button>
               </div>
             </form>
           </div>
@@ -801,7 +805,7 @@ export default function AllDoctors() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <GitMerge className="w-5 h-5 text-brand-burgundy" />
+              <GitMerge className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Reassign Account Territory</h2>
             </div>
             
@@ -835,14 +839,14 @@ export default function AllDoctors() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>Confirm Assignment</span>
-                </button>
+               <button
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-4 py-2 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+  <span>Confirm Assignment</span>
+</button>
               </div>
             </form>
           </div>
@@ -860,7 +864,7 @@ export default function AllDoctors() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-brand-burgundy" />
+              <CreditCard className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Manage Card on File</h2>
             </div>
             
@@ -935,14 +939,18 @@ export default function AllDoctors() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={cardLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {cardLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                  <span>Save Card</span>
-                </button>
+               <button
+  type="submit"
+  disabled={cardLoading}
+  className="flex items-center gap-1.5 px-4 py-2 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {cardLoading ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <Save className="w-3.5 h-3.5" />
+  )}
+  <span>Save Card</span>
+</button>
               </div>
             </form>
           </div>

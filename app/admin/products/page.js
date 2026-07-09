@@ -40,8 +40,6 @@ export default function ManageProducts() {
     case_price: "", // In dollars, e.g. "144.00"
     units_per_case: "",
     description: "",
-    shopify_product_id: "",
-    shopify_variant_id: "",
     active: 1
   });
 
@@ -51,14 +49,14 @@ export default function ManageProducts() {
   const getImageUrl = (path) => {
     if (!path) return null;
     if (path.startsWith("http://") || path.startsWith("https://")) return path;
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
     return `${baseUrl}${path}`;
   };
 
   async function fetchProducts() {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -91,8 +89,6 @@ export default function ManageProducts() {
       case_price: "",
       units_per_case: "",
       description: "",
-      shopify_product_id: "",
-      shopify_variant_id: "",
       active: 1
     });
     setUploadedImages([]);
@@ -112,8 +108,6 @@ export default function ManageProducts() {
       case_price: (prod.case_price / 100).toFixed(2), // Convert cents to dollars string
       units_per_case: prod.units_per_case.toString(),
       description: prod.description || "",
-      shopify_product_id: prod.shopify_product_id || "",
-      shopify_variant_id: prod.shopify_variant_id || "",
       active: prod.active
     });
     
@@ -144,7 +138,7 @@ export default function ManageProducts() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products/upload`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products/upload`,
         {
           method: "POST",
           headers: {
@@ -185,7 +179,7 @@ export default function ManageProducts() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products`,
         {
           method: "POST",
           headers: {
@@ -231,7 +225,7 @@ export default function ManageProducts() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/products/${selectedProduct.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products/${selectedProduct.id}`,
         {
           method: "PUT",
           headers: {
@@ -276,9 +270,9 @@ export default function ManageProducts() {
   );
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(cents / 100);
   };
 
@@ -301,13 +295,13 @@ export default function ManageProducts() {
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Wholesale Product Catalog</h1>
           <p className="text-slate-500 text-xs mt-1 font-semibold">Manage active product variants and set prices.</p>
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Product</span>
-        </button>
+       <button
+  onClick={handleOpenAdd}
+  className="flex items-center gap-2 px-4 py-2.5 bg-black hover:bg-neutral-800 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  <Plus className="w-4 h-4" />
+  <span>Add Product</span>
+</button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -321,7 +315,7 @@ export default function ManageProducts() {
             placeholder="Search products by name or SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-semibold glass-input shadow-sm"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-semibold glass-input shadow-sm border border-gray-300 focus:outline-none focus:ring-0 focus:ring-transparent focus:border-black focus:shadow-none"
           />
         </div>
       </div>
@@ -438,7 +432,7 @@ export default function ManageProducts() {
                             onClick={() => handleOpenEdit(prod)}
                             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer shadow-sm"
                           >
-                            <Edit className="w-3.5 h-3.5 text-brand-burgundy" />
+                            <Edit className="w-3.5 h-3.5 text-slate-900" />
                             <span>Edit</span>
                           </button>
                         </div>
@@ -463,7 +457,7 @@ export default function ManageProducts() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-brand-burgundy" />
+              <ShoppingBag className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Add New Product Variant</h2>
             </div>
             
@@ -587,14 +581,17 @@ export default function ManageProducts() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>Create Product</span>
-                </button>
+               <button
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-neutral-800 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {submitLoading ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : null}
+
+  <span>Create Product</span>
+</button>
               </div>
             </form>
           </div>
@@ -612,7 +609,7 @@ export default function ManageProducts() {
               <X className="w-5 h-5" />
             </button>
             <div className="mb-5 flex items-center gap-2">
-              <Edit className="w-5 h-5 text-brand-burgundy" />
+              <Edit className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Edit Product Details</h2>
             </div>
             
@@ -745,14 +742,14 @@ export default function ManageProducts() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitLoading}
-                  className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>Save Changes</span>
-                </button>
+               <button
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+  <span>Save Changes</span>
+</button>
               </div>
             </form>
           </div>
@@ -771,7 +768,7 @@ export default function ManageProducts() {
             </button>
             
             <div className="mb-5 flex items-center gap-2 shrink-0">
-              <Eye className="w-5 h-5 text-brand-burgundy" />
+              <Eye className="w-5 h-5 text-black" />
               <h2 className="text-base font-extrabold text-slate-900">Product Details</h2>
             </div>
 

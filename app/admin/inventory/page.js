@@ -9,7 +9,7 @@ import {
 import { useAuthStore } from "../../../store/authStore";
 import { toast } from "sonner";
 
-const API = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API = () => process.env.NEXT_PUBLIC_API_URL;
 
 export default function InventoryPage() {
   const { token } = useAuthStore();
@@ -134,7 +134,7 @@ export default function InventoryPage() {
   const outCount = products.filter(p => (p.stock_cases || 0) === 0).length;
   const lowCount = products.filter(p => (p.stock_cases || 0) > 0 && (p.stock_cases || 0) <= 10).length;
 
-  const fmt = (cents) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+  const fmt = (cents) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(cents / 100);
 
   const getStockBadge = (n) => {
     if (n === 0) return <span className="inline-flex items-center gap-1 text-[10px] font-black text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full"><AlertTriangle className="w-3 h-3" />OUT OF STOCK</span>;
@@ -220,7 +220,7 @@ export default function InventoryPage() {
               <Filter className="w-4 h-4 text-slate-400" />
               {[["all","All"], ["low","Low Stock"], ["out","Out of Stock"]].map(([val, lbl]) => (
                 <button key={val} onClick={() => setStockFilter(val)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${stockFilter === val ? "bg-brand-burgundy text-white border-brand-burgundy" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${stockFilter === val ? "bg-black text-white border-black" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
                   {lbl}
                 </button>
               ))}
@@ -344,7 +344,7 @@ export default function InventoryPage() {
             </button>
 
             <div className="flex items-center gap-2 mb-5 pb-4 border-b border-slate-100">
-              <Layers className="w-5 h-5 text-indigo-600" />
+              <Layers className="w-5 h-5 text-black" />
               <div>
                 <h2 className="text-base font-extrabold text-slate-900">Adjust Stock</h2>
                 <p className="text-[10px] text-slate-500 font-semibold">{selected.name} — SKU: {selected.sku}</p>
@@ -397,11 +397,18 @@ export default function InventoryPage() {
               <div className="flex justify-end gap-3 pt-1">
                 <button type="button" onClick={() => setAdjustOpen(false)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" disabled={saving}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-60">
-                  {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                  Save Adjustment
-                </button>
+               <button
+  type="submit"
+  disabled={saving}
+  className="flex items-center gap-1.5 px-5 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-60"
+>
+  {saving ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <CheckCircle2 className="w-3.5 h-3.5" />
+  )}
+  Save Adjustment
+</button>
               </div>
             </form>
 

@@ -82,7 +82,7 @@ function EditDoctorContent() {
     async function loadDoctor() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -142,7 +142,7 @@ function EditDoctorContent() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/rep/doctors/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rep/doctors/${id}`,
         {
           method: "PUT",
           headers: {
@@ -378,14 +378,18 @@ function EditDoctorContent() {
           >
             Cancel
           </Link>
-          <button
-            type="submit"
-            disabled={submitLoading}
-            className="flex items-center gap-1.5 px-5 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer animate-fadeIn"
-          >
-            {submitLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-            <span>Save Updates</span>
-          </button>
+        <button
+  type="submit"
+  disabled={submitLoading}
+  className="flex items-center gap-1.5 px-5 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer animate-fadeIn"
+>
+  {submitLoading ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <Save className="w-3.5 h-3.5" />
+  )}
+  <span>Save Updates</span>
+</button>
         </div>
       </form>
     </div>

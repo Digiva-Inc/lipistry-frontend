@@ -9,8 +9,6 @@ import {
   Truck, 
   CheckCircle2, 
   Clock, 
-  CheckSquare, 
-  Square,
   ClipboardList,
   ChevronRight,
   TrendingUp,
@@ -31,7 +29,6 @@ export default function WarehousePanel() {
   const [orderItems, setOrderItems] = useState([]);
   const [modalLoading, setModalLoading] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
-  const [packedItems, setPackedItems] = useState({}); // mapping of item_id -> boolean
 
   // Shipping form modal
   const [shipModalOpen, setShipModalOpen] = useState(false);
@@ -45,7 +42,7 @@ export default function WarehousePanel() {
   async function fetchOrders() {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (!response.ok) throw new Error("Failed to load orders");
@@ -83,13 +80,12 @@ export default function WarehousePanel() {
   const handleOpenDetails = async (order) => {
     setSelectedOrder(order);
     setOrderItems([]);
-    setPackedItems({});
     setModalLoading(true);
     setDetailOpen(true);
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${order.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${order.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (!response.ok) throw new Error("Failed to load order items.");
@@ -102,20 +98,14 @@ export default function WarehousePanel() {
     }
   };
 
-  // Toggle item packing status
-  const togglePackItem = (itemId) => {
-    setPackedItems(prev => ({
-      ...prev,
-      [itemId]: !prev[itemId]
-    }));
-  };
+
 
   // Update logistics status
   const handleStatusUpdate = async (orderId, newStatus, payload = {}) => {
     const updatingToast = toast.loading(`Updating order to ${newStatus.replace('_', ' ')}...`);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/admin/orders/${orderId}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderId}/status`,
         {
           method: "PUT",
           headers: {
@@ -207,13 +197,13 @@ export default function WarehousePanel() {
   const pendingCount = orders.filter(o => o.status === "submitted_warehouse").length;
   const confirmedCount = orders.filter(o => o.status === "confirmed").length;
   const transitCount = orders.filter(o => o.status === "shipped" || o.status === "out_for_delivery").length;
-  const returnsCount = orders.filter(o => o.status === "return_requested" || o.status === "return_approved").length;
-  const completedCount = orders.filter(o => o.status === "delivered").length;
+  const returnsCount = orders.filter(o => o.status === "return_requested" || o.status === "return_approved" || o.status === "returned").length;
+  const completedCount = orders.filter(o => o.status === "delivered" || o.status === "cancelled").length;
 
   const formatPrice = (cents) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(cents / 100);
   };
 
@@ -290,7 +280,7 @@ export default function WarehousePanel() {
   const getImageUrl = (path) => {
     if (!path) return null;
     if (path.startsWith("http://") || path.startsWith("https://")) return path;
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
     return `${baseUrl}${path}`;
   };
 
@@ -347,7 +337,7 @@ export default function WarehousePanel() {
 
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md hover:border-slate-350 hover:-translate-y-0.5 transition-all duration-300">
           <div>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Completed Today</span>
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Delivered Orders</span>
             <span className="text-2xl font-black text-slate-800 mt-1 block">{completedCount}</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
@@ -365,16 +355,16 @@ export default function WarehousePanel() {
             { id: "confirmed", name: "Confirmed / Packaging", count: confirmedCount },
             { id: "active_shipping", name: "Active Transit", count: transitCount },
             { id: "returns", name: "Returns / Pickups", count: returnsCount },
-            { id: "completed", name: "Completed" },
+            { id: "completed", name: "Delivered", count: completedCount },
             { id: "all", name: "All Log" }
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${
-                activeTab === tab.id
-                  ? "bg-brand-burgundy text-white shadow-md"
-                  : "text-slate-500 hover:text-slate-805 hover:bg-slate-100"
+               activeTab === tab.id
+  ? "bg-black text-white shadow-md"
+  : "text-slate-500 hover:text-slate-805 hover:bg-slate-100"
               }`}
             >
               <span>{tab.name}</span>
@@ -459,19 +449,19 @@ export default function WarehousePanel() {
                         {/* Quick flow action button */}
                         {order.status === "submitted_warehouse" && (
                           <button
-                            onClick={() => handleConfirmOrder(order.id)}
-                            className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                          >
-                            Confirm Order
-                          </button>
+  onClick={() => handleConfirmOrder(order.id)}
+  className="px-2.5 py-1.5 bg-black hover:bg-neutral-800 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+>
+  Confirm Order
+</button>
                         )}
                         {order.status === "confirmed" && (
-                          <button
-                            onClick={() => handleOpenShipDialog(order)}
-                            className="px-2.5 py-1.5 bg-indigo-650 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                          >
-                            Ship Order
-                          </button>
+                        <button
+  onClick={() => handleOpenShipDialog(order)}
+  className="px-2.5 py-1.5 bg-black hover:bg-gray-800 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+>
+  Ship Order
+</button>
                         )}
                         {order.status === "shipped" && (
                           <button
@@ -493,7 +483,7 @@ export default function WarehousePanel() {
                           <div className="flex gap-1.5">
                             <button
                               onClick={() => handleStatusUpdate(order.id, "return_approved")}
-                              className="px-2.5 py-1.5 bg-emerald-605 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                              className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                             >
                               Approve Return
                             </button>
@@ -508,7 +498,7 @@ export default function WarehousePanel() {
                         {order.status === "return_approved" && (
                           <button
                             onClick={() => handleStatusUpdate(order.id, "returned")}
-                            className="px-2.5 py-1.5 bg-teal-650 hover:bg-teal-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                            className="px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                           >
                             Confirm Return Received
                           </button>
@@ -518,7 +508,7 @@ export default function WarehousePanel() {
                           onClick={() => handleOpenDetails(order)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 font-bold hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shadow-sm text-[11px]"
                         >
-                          <span>Pack List</span>
+                          <span>View Details</span>
                           <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -569,7 +559,7 @@ export default function WarehousePanel() {
                         <div>
                           <p className="font-bold text-slate-700 mb-1.5">Proof Image:</p>
                           {(() => {
-                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace("/api", "");
+                            const baseUrl = (process.env.NEXT_PUBLIC_API_URL).replace("/api", "");
                             const imgUrl = selectedOrder.return_proof_image.startsWith("http") 
                               ? selectedOrder.return_proof_image 
                               : `${baseUrl}${selectedOrder.return_proof_image}`;
@@ -591,7 +581,7 @@ export default function WarehousePanel() {
                         <div className="flex gap-2 pt-2">
                           <button
                             onClick={() => handleStatusUpdate(selectedOrder.id, "return_approved")}
-                            className="flex-1 px-3 py-2 bg-emerald-650 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                            className="flex-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                           >
                             Approve Return Request
                           </button>
@@ -608,7 +598,7 @@ export default function WarehousePanel() {
                         <div className="pt-2">
                           <button
                             onClick={() => handleStatusUpdate(selectedOrder.id, "returned")}
-                            className="w-full px-3 py-2 bg-teal-650 hover:bg-teal-700 text-white text-[11px] font-bold rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                            className="w-full px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                           >
                             Confirm Return Received & Restock
                           </button>
@@ -619,17 +609,47 @@ export default function WarehousePanel() {
                 )}
 
                 {/* Shipping info */}
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
-                    {selectedOrder.return_reason ? "Return Customer Info" : "Shipping Destination"}
-                  </span>
-                  <span className="text-slate-800 font-black block">Dr. {selectedOrder.doctor_first_name} {selectedOrder.doctor_last_name}</span>
-                  <span className="text-slate-650 block mt-0.5 font-semibold">
-                    {selectedOrder.address_line1}
-                    {selectedOrder.address_line2 ? `, ${selectedOrder.address_line2}` : ""}
-                  </span>
-                  <span className="text-slate-650 block font-semibold">{selectedOrder.city}, {selectedOrder.state} {selectedOrder.zip}</span>
-                  {selectedOrder.doctor_phone && <span className="text-slate-500 block mt-1 font-medium">Phone: {selectedOrder.doctor_phone}</span>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
+                      {selectedOrder.return_reason ? "Return Customer Info" : "Shipping Destination"}
+                    </span>
+                    <span className="text-slate-800 font-black block">Dr. {selectedOrder.doctor_first_name} {selectedOrder.doctor_last_name}</span>
+                    <span className="text-slate-650 block mt-0.5 font-semibold">
+                      {selectedOrder.address_line1}
+                      {selectedOrder.address_line2 ? `, ${selectedOrder.address_line2}` : ""}
+                    </span>
+                    <span className="text-slate-650 block font-semibold">{selectedOrder.city}, {selectedOrder.state} {selectedOrder.zip}</span>
+                    {selectedOrder.doctor_phone && <span className="text-slate-500 block mt-1 font-medium">Phone: {selectedOrder.doctor_phone}</span>}
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs flex flex-col justify-between">
+                    <div>
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Stripe Payment Info</span>
+                      {selectedOrder.stripe_payment_intent_id ? (
+                        <div>
+                          <div className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Collected Automatically</span>
+                          </div>
+                          <div className="text-[8px] font-mono text-slate-400 mt-1 break-all bg-white px-1 py-0.5 rounded border border-slate-100 inline-block">
+                            {selectedOrder.stripe_payment_intent_id}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-bold text-amber-600">Pending or Offline</span>
+                      )}
+                    </div>
+                    {selectedOrder.payment_brand && (
+                      <div className="mt-2 pt-2 border-t border-slate-200">
+                        <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">Method</span>
+                        <div className="text-[11px] font-bold text-slate-700 capitalize">
+                          {selectedOrder.payment_brand} 
+                          {selectedOrder.payment_last4 && selectedOrder.payment_last4 !== 'unknown' && ` •••• ${selectedOrder.payment_last4}`}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
  
                 {/* Packing Checkoff items */}
@@ -641,7 +661,6 @@ export default function WarehousePanel() {
  
                   <div className="space-y-2">
                     {orderItems.map((item) => {
-                      const isPacked = !!packedItems[item.id];
                       let parsedImages = [];
                       if (item.product_images) {
                         try {
@@ -653,19 +672,9 @@ export default function WarehousePanel() {
                       return (
                         <div 
                           key={item.id} 
-                          onClick={() => togglePackItem(item.id)}
-                          className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
-                            isPacked 
-                              ? "bg-emerald-50/50 border-emerald-250 opacity-75" 
-                              : "bg-white border-slate-200 hover:border-slate-300"
-                          }`}
+                          className="p-3 rounded-xl border transition-all bg-white border-slate-200 flex items-center justify-between gap-4"
                         >
                           <div className="flex items-center gap-3">
-                            {/* Checkbox Icon */}
-                            <div className={isPacked ? "text-emerald-600" : "text-slate-400"}>
-                              {isPacked ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
-                            </div>
-                            
                             {/* Product Image */}
                             {firstImg ? (
                               <img 
@@ -680,7 +689,7 @@ export default function WarehousePanel() {
                             )}
  
                             <div>
-                              <div className={`font-bold text-slate-900 ${isPacked ? "line-through text-slate-500" : ""}`}>
+                              <div className="font-bold text-slate-900">
                                 {item.product_name_snapshot || item.product_name}
                               </div>
                               <div className="text-[10px] text-slate-455 text-slate-450 font-mono mt-0.5">
@@ -700,35 +709,15 @@ export default function WarehousePanel() {
                   </div>
                 </div>
  
-                {/* Packing helper alert */}
-                {selectedOrder.return_reason ? (
-                  <div className="p-3 bg-purple-50 border border-purple-100 text-purple-700 text-xs font-semibold rounded-xl flex items-start gap-2">
-                    <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5" />
-                    <p>Verify that the physical items received match the returned quantities and item details before confirming restocking.</p>
-                  </div>
-                ) : (
-                  <div className="p-3 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold rounded-xl flex items-start gap-2">
-                    <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5" />
-                    <p>Check off items in the box list as they are verified and placed in the shipment box. Make sure SKU details and case count are correct.</p>
-                  </div>
-                )}
               </div>
             )}
  
-            <div className="pt-3 border-t border-slate-200 mt-6 flex justify-between shrink-0 items-center">
-              <div>
-                {/* Progress bar */}
-                {orderItems.length > 0 && !selectedOrder.return_reason && (
-                  <span className="text-[10px] text-slate-500 font-bold">
-                    Packed: {Object.values(packedItems).filter(Boolean).length} of {orderItems.length}
-                  </span>
-                )}
-              </div>
+            <div className="pt-3 border-t border-slate-200 mt-6 flex justify-end shrink-0 items-center">
               <button
                 onClick={() => setDetailOpen(false)}
                 className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-300 text-slate-650 hover:bg-slate-50 transition-colors cursor-pointer"
               >
-                Close packing List
+                Close Details
               </button>
             </div>
           </div>
@@ -801,13 +790,17 @@ export default function WarehousePanel() {
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  disabled={shipLoading}
-                  className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-burgundy hover:bg-brand-burgundy-hover text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-                >
-                  {shipLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                  <span>Confirm Dispatch</span>
-                </button>
+  type="submit"
+  disabled={shipLoading}
+  className="flex items-center gap-1.5 px-4 py-2.5 bg-black hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+>
+  {shipLoading ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <CheckCircle2 className="w-3.5 h-3.5" />
+  )}
+  <span>Confirm Dispatch</span>
+</button>
               </div>
             </form>
           </div>
