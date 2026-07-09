@@ -652,7 +652,7 @@ export default function AllOrders() {
                       <td className="px-6 py-4 text-right">
                         <button
                           onClick={() => handleOpenDetails(o)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-green-700 bg-green-100  border border-green-200 font-bold transition-all cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5 text-black" />
                           <span>View</span>
@@ -1036,7 +1036,7 @@ export default function AllOrders() {
                 {/* Total block */}
                 <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-200 font-extrabold">
                   <span className="text-slate-550 text-xs uppercase tracking-wider">Grand Total (Stripe Charged)</span>
-                  <span className="text-brand-burgundy text-lg tracking-tight">{formatPrice(orderDetail.order.total_cents)}</span>
+                  <span className="text-brand-black text-lg tracking-tight">{formatPrice(orderDetail.order.total_cents)}</span>
                 </div>
               </div>
             ) : null}
