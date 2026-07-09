@@ -416,21 +416,21 @@ export default function ManageProducts() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleOpenAdjustStock(prod)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 bg-indigo-50/50 hover:bg-indigo-100 hover:text-indigo-700 border border-indigo-100 font-bold transition-all cursor-pointer shadow-sm text-[11px]"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700  bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold transition-all cursor-pointer shadow-sm text-[11px]"
                           >
                             <Layers className="w-3.5 h-3.5 text-indigo-650" />
                             <span>Stock</span>
                           </button>
                           <button
                             onClick={() => handleOpenView(prod)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200 font-bold transition-all cursor-pointer shadow-sm"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 bg-green-100 border border-green-200 font-bold transition-all cursor-pointer shadow-sm"
                           >
                             <Eye className="w-3.5 h-3.5 text-slate-500" />
                             <span>View</span>
                           </button>
                           <button
                             onClick={() => handleOpenEdit(prod)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 hover:bg-brand-burgundy-light hover:text-brand-burgundy border border-slate-200 font-bold transition-all cursor-pointer shadow-sm"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-700 bg-red-100 text-brand-burgundy border border-red-200 font-bold transition-all cursor-pointer shadow-sm"
                           >
                             <Edit className="w-3.5 h-3.5 text-slate-900" />
                             <span>Edit</span>
